@@ -1,0 +1,350 @@
+/* ===========================
+   Agencyledger.css
+   =========================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap');
+
+:root {
+  --al-bg: #f0f3f9;
+  --al-surface: #ffffff;
+  --al-primary: #1a3a8f;
+  --al-primary-light: #2a52c9;
+  --al-primary-glow: rgba(26, 58, 143, 0.1);
+  --al-accent: #e8a020;
+  --al-accent-soft: rgba(232, 160, 32, 0.12);
+  --al-success: #16a34a;
+  --al-success-soft: rgba(22, 163, 74, 0.1);
+  --al-danger: #dc2626;
+  --al-danger-soft: rgba(220, 38, 38, 0.1);
+  --al-border: #e2e8f4;
+  --al-text: #0f1c3f;
+  --al-text-2: #4a5578;
+  --al-text-3: #94a3bb;
+  --al-shadow-sm: 0 1px 4px rgba(26,58,143,0.06);
+  --al-shadow-md: 0 4px 20px rgba(26,58,143,0.09);
+  --al-radius: 14px;
+  --al-radius-sm: 8px;
+  --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Wrapper ── */
+.al-wrapper {
+  margin-left: 210px;
+  padding: 28px 32px 100px;
+  min-height: 100vh;
+  background: var(--al-bg);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* ── Header ── */
+.al-page-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--al-text);
+  letter-spacing: -0.03em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.al-page-sub {
+  font-size: 13px;
+  color: var(--al-text-3);
+  font-weight: 500;
+  margin-bottom: 26px;
+}
+
+/* ── Filter Card ── */
+.al-filter-card {
+  background: var(--al-surface);
+  border: 1px solid var(--al-border);
+  border-radius: var(--al-radius);
+  padding: 20px 24px;
+  box-shadow: var(--al-shadow-sm);
+  margin-bottom: 24px;
+}
+
+.al-filter-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--al-text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 16px;
+}
+
+.al-filter-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.al-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 150px;
+}
+
+.al-field label {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--al-text-2);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.al-input,
+.al-select {
+  padding: 9px 14px;
+  border: 1.5px solid var(--al-border);
+  border-radius: var(--al-radius-sm);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13.5px;
+  color: var(--al-text);
+  background: var(--al-bg);
+  outline: none;
+  transition: var(--transition);
+  width: 100%;
+}
+
+.al-input:focus,
+.al-select:focus {
+  border-color: var(--al-primary-light);
+  background: #fff;
+  box-shadow: 0 0 0 3px var(--al-primary-glow);
+}
+
+.al-search-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  background: var(--al-primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--al-radius-sm);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+  height: 40px;
+  white-space: nowrap;
+  align-self: flex-end;
+}
+
+.al-search-btn:hover {
+  background: var(--al-primary-light);
+  box-shadow: 0 4px 14px rgba(26,58,143,0.3);
+}
+
+.al-search-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ── Stats ── */
+.al-stats {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.al-stat-card {
+  background: var(--al-surface);
+  border: 1px solid var(--al-border);
+  border-radius: var(--al-radius);
+  padding: 16px 22px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: var(--al-shadow-sm);
+  flex: 1;
+  min-width: 150px;
+}
+
+.al-stat-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.al-stat-icon.blue  { background: var(--al-primary-glow); }
+.al-stat-icon.green { background: var(--al-success-soft); }
+.al-stat-icon.red   { background: var(--al-danger-soft);  }
+.al-stat-icon.gold  { background: var(--al-accent-soft);  }
+
+.al-stat-value {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--al-text);
+  line-height: 1;
+  font-family: 'DM Mono', monospace;
+}
+
+.al-stat-label {
+  font-size: 12px;
+  color: var(--al-text-3);
+  font-weight: 500;
+  margin-top: 3px;
+}
+
+/* ── Table Card ── */
+.al-table-card {
+  background: var(--al-surface);
+  border: 1px solid var(--al-border);
+  border-radius: var(--al-radius);
+  box-shadow: var(--al-shadow-md);
+  overflow: hidden;
+}
+
+.al-table-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--al-border);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.al-table-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--al-text);
+}
+
+.al-table-scroll { overflow-x: auto; }
+
+.al-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+  min-width: 900px;
+}
+
+.al-table thead tr {
+  background: #f7f9fd;
+  border-bottom: 2px solid var(--al-border);
+}
+
+.al-table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--al-text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.al-table td {
+  padding: 13px 16px;
+  color: var(--al-text);
+  border-bottom: 1px solid var(--al-border);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.al-table tbody tr { transition: var(--transition); }
+.al-table tbody tr:hover { background: #f7f9fd; }
+.al-table tbody tr:last-child td { border-bottom: none; }
+
+/* Type Badge */
+.al-type-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11.5px;
+  font-weight: 700;
+  background: var(--al-primary-glow);
+  color: var(--al-primary);
+  white-space: nowrap;
+}
+
+.al-type-badge.credit  { background: var(--al-success-soft); color: var(--al-success); }
+.al-type-badge.debit   { background: var(--al-danger-soft);  color: var(--al-danger);  }
+.al-type-badge.deposit { background: var(--al-accent-soft);  color: var(--al-accent);  }
+
+/* Amounts */
+.al-debit  { font-family: 'DM Mono', monospace; font-weight: 700; color: var(--al-danger);  font-size: 13px; }
+.al-credit { font-family: 'DM Mono', monospace; font-weight: 700; color: var(--al-success); font-size: 13px; }
+.al-balance{ font-family: 'DM Mono', monospace; font-weight: 700; color: var(--al-primary); font-size: 13px; }
+
+/* Txn ID chip */
+.al-txn-chip {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  color: var(--al-text-3);
+  background: var(--al-bg);
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--al-border);
+}
+
+/* Loading / Error / Empty / Hint */
+.al-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+  gap: 12px;
+  color: var(--al-text-3);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.al-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2.5px solid var(--al-border);
+  border-top-color: var(--al-primary);
+  border-radius: 50%;
+  animation: al-spin 0.7s linear infinite;
+}
+
+@keyframes al-spin { to { transform: rotate(360deg); } }
+
+.al-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: var(--al-danger);
+  font-size: 14px;
+  font-weight: 600;
+  gap: 8px;
+}
+
+.al-empty, .al-hint {
+  text-align: center;
+  padding: 60px;
+  color: var(--al-text-3);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .al-wrapper {
+    margin-left: 0;
+    padding: 16px 14px 80px;
+  }
+
+  .al-filter-row { flex-direction: column; }
+  .al-field { min-width: unset; }
+  .al-search-btn { width: 100%; justify-content: center; }
+  .al-stats { gap: 10px; }
+  .al-stat-card { min-width: 130px; padding: 12px 14px; }
+}

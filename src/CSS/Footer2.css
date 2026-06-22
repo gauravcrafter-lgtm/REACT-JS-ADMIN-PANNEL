@@ -1,0 +1,23 @@
+/* Footer2.css */
+.footer {
+  background: #1a3a8f;
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  padding: 16px 24px;
+  font-size: 13px;
+  font-weight: 500;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+}
+
+.footer a {
+  color: #e8a020;
+  text-decoration: none;
+}
+
+.footer a:hover {
+  text-decoration: underline;
+}

@@ -1,0 +1,490 @@
+/* ============================================
+   FlightBooking.css — Professional Redesign
+   Font: Sora (display) + IBM Plex Mono (IDs)
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+/* ─── CSS Variables ───────────────────────── */
+:root {
+  --fb-bg:          #f0f4f8;
+  --fb-surface:     #ffffff;
+  --fb-surface2:    #f7f9fc;
+  --fb-border:      #e4eaf2;
+  --fb-text:        #0d1b2a;
+  --fb-muted:       #6b7a90;
+  --fb-accent:      #1a56db;
+  --fb-accent-h:    #1447c0;
+  --fb-font:        'Sora', sans-serif;
+  --fb-mono:        'IBM Plex Mono', monospace;
+  --fb-radius:      10px;
+  --fb-radius-lg:   14px;
+}
+
+/* ─── Base Layout ─────────────────────────── */
+.fb-page {
+  display: flex;
+  min-height: 100vh;
+  background: var(--fb-bg);
+  font-family: var(--fb-font);
+  color: var(--fb-text);
+}
+
+.fb-main {
+  flex: 1;
+  padding: 32px 36px 24px;
+  transition: margin-left 0.3s ease;
+  min-width: 0;
+}
+
+.fb-main.collapsed {
+  margin-left: 60px;
+}
+
+/* ─── Page Header ─────────────────────────── */
+.fb-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.fb-header-left h1 {
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  color: var(--fb-text);
+  margin: 0 0 4px;
+}
+
+.fb-header-left p {
+  color: var(--fb-muted);
+  font-size: 13.5px;
+  margin: 0;
+}
+
+/* ─── Stat Cards ──────────────────────────── */
+.fb-stats {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.fb-stat-card {
+  background: var(--fb-surface);
+  border: 1px solid var(--fb-border);
+  border-radius: var(--fb-radius);
+  padding: 12px 20px;
+  text-align: center;
+  min-width: 80px;
+}
+
+.fb-stat-card span {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  font-weight: 500;
+  margin-bottom: 5px;
+  color: var(--fb-muted);
+}
+
+.fb-stat-card strong {
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.fb-stat-card.primary strong { color: var(--fb-accent); }
+.fb-stat-card.green strong   { color: #15803d; }
+.fb-stat-card.amber strong   { color: #b45309; }
+
+/* ─── Filter Card ─────────────────────────── */
+.fb-filter-card {
+  background: var(--fb-surface);
+  border: 1px solid var(--fb-border);
+  border-radius: var(--fb-radius-lg);
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.fb-filter-title {
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--fb-muted);
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+
+.fb-filter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 16px;
+  align-items: end;
+}
+
+/* ─── Input Group ─────────────────────────── */
+.fb-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fb-input-group label {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.fb-input {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1.5px solid var(--fb-border);
+  border-radius: var(--fb-radius);
+  font-family: var(--fb-font);
+  font-size: 13.5px;
+  color: var(--fb-text);
+  background: var(--fb-surface2);
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.fb-input:focus {
+  border-color: var(--fb-accent);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.1);
+}
+
+/* DatePicker override */
+.react-datepicker-wrapper {
+  width: 100%;
+}
+
+.react-datepicker__input-container input {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1.5px solid var(--fb-border);
+  border-radius: var(--fb-radius);
+  font-family: var(--fb-font);
+  font-size: 13.5px;
+  color: var(--fb-text);
+  background: var(--fb-surface2);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.react-datepicker__input-container input:focus {
+  border-color: var(--fb-accent);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.1);
+}
+
+/* ─── Buttons ─────────────────────────────── */
+.fb-btn-group {
+  flex-direction: row;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.fb-search-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 10px 18px;
+  background: var(--fb-accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--fb-radius);
+  font-family: var(--fb-font);
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  white-space: nowrap;
+}
+
+.fb-search-btn:hover {
+  background: var(--fb-accent-h);
+  transform: translateY(-1px);
+}
+
+.fb-reset-btn {
+  padding: 10px 14px;
+  background: var(--fb-surface2);
+  color: var(--fb-muted);
+  border: 1.5px solid var(--fb-border);
+  border-radius: var(--fb-radius);
+  font-family: var(--fb-font);
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  white-space: nowrap;
+}
+
+.fb-reset-btn:hover {
+  background: #e9edf3;
+  color: var(--fb-text);
+}
+
+/* ─── State Boxes ─────────────────────────── */
+.fb-state-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 60px 20px;
+  border-radius: var(--fb-radius-lg);
+  text-align: center;
+  font-size: 14px;
+}
+
+.fb-state-box.loading {
+  background: var(--fb-surface);
+  border: 1px solid var(--fb-border);
+  color: var(--fb-muted);
+}
+
+.fb-state-box.error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+}
+
+.fb-state-box.empty {
+  background: var(--fb-surface);
+  border: 1px solid var(--fb-border);
+  color: var(--fb-muted);
+}
+
+/* Spinner */
+.fb-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--fb-border);
+  border-top-color: var(--fb-accent);
+  border-radius: 50%;
+  animation: fb-spin 0.75s linear infinite;
+}
+
+@keyframes fb-spin {
+  to { transform: rotate(360deg); }
+}
+
+.fb-retry-btn {
+  padding: 8px 20px;
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
+  border-radius: var(--fb-radius);
+  font-family: var(--fb-font);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.fb-retry-btn:hover {
+  background: #fecaca;
+}
+
+/* ─── Table Card ──────────────────────────── */
+.fb-table-card {
+  background: var(--fb-surface);
+  border: 1px solid var(--fb-border);
+  border-radius: var(--fb-radius-lg);
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.fb-table-meta {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--fb-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: var(--fb-muted);
+  background: var(--fb-surface2);
+}
+
+.fb-table-meta strong {
+  color: var(--fb-text);
+}
+
+.fb-table-hint {
+  font-size: 11.5px;
+  color: #b0bec5;
+}
+
+.fb-table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ─── Table ───────────────────────────────── */
+.fb-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 860px;
+}
+
+.fb-table thead tr {
+  background: #f7f9fc;
+}
+
+.fb-table th {
+  padding: 12px 14px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  font-weight: 500;
+  color: var(--fb-muted);
+  text-align: left;
+  border-bottom: 1px solid var(--fb-border);
+  white-space: nowrap;
+}
+
+.fb-table td {
+  padding: 13px 14px;
+  border-bottom: 1px solid #f0f4f8;
+  font-size: 13.5px;
+  vertical-align: middle;
+}
+
+.fb-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.fb-table tbody tr:hover td {
+  background: #fafbfe;
+  transition: background 0.15s;
+}
+
+/* ─── Table Cell Types ────────────────────── */
+.fb-index {
+  color: var(--fb-muted);
+  font-size: 12.5px;
+  font-weight: 500;
+  width: 36px;
+}
+
+.fb-booking-id {
+  font-family: var(--fb-mono);
+  font-size: 12.5px;
+  color: var(--fb-accent);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.fb-pnr {
+  font-family: var(--fb-mono);
+  font-size: 12.5px;
+  color: var(--fb-muted);
+  white-space: nowrap;
+}
+
+.fb-sector {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--fb-text);
+  white-space: nowrap;
+}
+
+/* ─── Status Pills ────────────────────────── */
+.fb-pill {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 50px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.fb-pill.booked   { background: #d1fae5; color: #065f46; }
+.fb-pill.pending  { background: #fef3c7; color: #92400e; }
+.fb-pill.rejected { background: #fee2e2; color: #b91c1c; }
+.fb-pill.hold     { background: #ede9fe; color: #5b21b6; }
+.fb-pill.default  { background: #f1f5f9; color: #475569; }
+
+/* ─── Action Buttons ──────────────────────── */
+.fb-action-btn {
+  padding: 5px 13px;
+  border-radius: 6px;
+  font-family: var(--fb-font);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: transform 0.15s, filter 0.15s;
+  white-space: nowrap;
+}
+
+.fb-action-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(0.94);
+}
+
+.fb-action-btn.invoice {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border-color: #bfdbfe;
+}
+
+.fb-action-btn.ticket {
+  background: #f0fdf4;
+  color: #15803d;
+  border-color: #bbf7d0;
+}
+
+.fb-action-btn.edit {
+  background: #fffbeb;
+  color: #b45309;
+  border-color: #fde68a;
+}
+
+/* ─── Responsive ──────────────────────────── */
+@media (max-width: 768px) {
+  .fb-main {
+    padding: 20px 16px;
+  }
+
+  .fb-header {
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .fb-header-left h1 {
+    font-size: 21px;
+  }
+
+  .fb-stats {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .fb-filter-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .fb-btn-group {
+    grid-column: 1 / -1;
+  }
+
+  .fb-table-hint {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .fb-filter-grid {
+    grid-template-columns: 1fr;
+  }
+}

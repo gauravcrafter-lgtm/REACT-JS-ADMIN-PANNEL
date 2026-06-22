@@ -1,0 +1,361 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=DM+Sans:wght@300;400;500&display=swap');
+
+/* ========================
+   BASE RESET
+======================== */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'DM Sans', Arial, sans-serif;
+}
+
+/* ========================
+   MAIN BACKGROUND
+======================== */
+.mains {
+  min-height: 100vh;
+  background-image: url("https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1920&q=80");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  position: relative;
+  text-align: center;
+  color: white;
+  padding: 40px 20px 50px;
+}
+
+/* Dark overlay */
+.mains::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(10, 22, 40, 0.88) 0%,
+    rgba(15, 42, 74, 0.80) 50%,
+    rgba(13, 31, 60, 0.88) 100%
+  );
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Blue glow accent */
+.mains::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at 70% 0%, rgba(0, 126, 214, 0.22) 0%, transparent 60%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* All children above overlay */
+.mains > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ========================
+   PAGE TITLE
+======================== */
+.title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(22px, 4vw, 40px);
+  font-weight: 600;
+  color: #ffffff;
+  line-height: 1.25;
+  margin: 0 0 40px;
+  letter-spacing: -0.01em;
+}
+
+.title span {
+  color: #38a8f5;
+}
+
+/* ========================
+   CONTAINER (card wrapper)
+======================== */
+.container {
+  width: 75%;
+  max-width: 900px;
+  margin: 0 auto 50px;
+  background: rgba(255, 255, 255, 0.97);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  border-radius: 24px;
+  padding: 40px;
+  color: #0a1628;
+  flex-wrap: wrap;
+  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.4);
+}
+
+/* ========================
+   LEFT PANEL
+======================== */
+.left {
+  flex: 1;
+  min-width: 200px;
+  padding: 10px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.left h2 {
+  color: #0a6ecf;
+  font-size: 20px;
+  margin: 0;
+}
+
+.img-thumbnail {
+  width: 100%;
+  max-width: 280px;
+  border-radius: 16px;
+  object-fit: cover;
+  border: none;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.left p {
+  font-size: 14px;
+  color: #546178;
+  line-height: 1.65;
+  font-weight: 300;
+  margin: 0;
+}
+
+/* ========================
+   RIGHT PANEL (Login Form)
+======================== */
+.right {
+  width: 340px;
+  background: #f5f8fc;
+  padding: 32px 28px;
+  border-radius: 16px;
+  border: 1px solid #e2e9f3;
+  flex-shrink: 0;
+}
+
+.right h3 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 20px;
+  font-weight: 500;
+  color: #0a1628;
+  margin: 0 0 6px;
+}
+
+/* Subtle subtext (optional — add <p> below h3 if desired) */
+.right .subtext {
+  font-size: 13px;
+  color: #7a8899;
+  margin-bottom: 20px;
+}
+
+.right form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.right input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1.5px solid #dce5f0;
+  font-size: 14px;
+  font-family: 'DM Sans', sans-serif;
+  color: #0a1628;
+  background: #ffffff;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.right input:focus {
+  border-color: #007ed6;
+  box-shadow: 0 0 0 3px rgba(0, 126, 214, 0.12);
+}
+
+.right input::placeholder {
+  color: #a0adc0;
+}
+
+.right button[type="submit"] {
+  width: 100% !important;
+  padding: 13px 20px !important;
+  background: linear-gradient(135deg, #007ed6, #005aad);
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  font-family: 'DM Sans', sans-serif;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+  margin-top: 4px;
+}
+
+.right button[type="submit"]:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+.right button[type="submit"]:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.forgot {
+  color: #007ed6;
+  cursor: pointer;
+  font-size: 13px;
+  text-align: right;
+  margin-top: -4px;
+  font-weight: 400;
+}
+
+.forgot:hover {
+  text-decoration: underline;
+}
+
+/* ========================
+   SERVICE CARDS
+======================== */
+.services {
+  display: flex;
+  justify-content: center;
+  gap: clamp(10px, 2vw, 28px);
+  flex-wrap: wrap;
+  padding: 0 10px;
+}
+
+.serviceCard {
+  width: 100px;
+  height: 92px;
+  background: rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  cursor: pointer;
+  transition: background 0.25s, transform 0.25s, box-shadow 0.25s;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.serviceCard:hover {
+  background: rgba(255, 255, 255, 0.18);
+  transform: translateY(-6px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+}
+
+.icon {
+  font-size: 30px;
+  line-height: 1;
+}
+
+.serviceCard h4 {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+}
+
+/* ========================
+   ERROR TEXT
+======================== */
+p[style*="color: red"],
+p[style*="color:red"] {
+  background: #fff0f0;
+  border: 1px solid #ffc5c5;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: #c0392b !important;
+  margin-top: 4px;
+}
+
+/* ========================
+   TABLET — max 1024px
+======================== */
+@media (max-width: 1024px) {
+  .container {
+    width: 90%;
+    padding: 30px;
+  }
+
+  .left {
+    width: 100%;
+  }
+
+  .right {
+    width: 100%;
+    margin-top: 10px;
+  }
+}
+
+/* ========================
+   MOBILE — max 640px
+======================== */
+@media (max-width: 640px) {
+  .mains {
+    padding: 28px 16px 40px;
+  }
+
+  .title {
+    font-size: 22px;
+  }
+
+  .container {
+    width: 100%;
+    padding: 22px 18px;
+    border-radius: 18px;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* Hide left panel image on small screens to save space */
+  .left {
+    display: none;
+  }
+
+  .right {
+    width: 100%;
+    padding: 24px 20px;
+  }
+
+  .right h3 {
+    font-size: 18px;
+  }
+
+  .serviceCard {
+    width: 76px;
+    height: 72px;
+    border-radius: 12px;
+  }
+
+  .icon {
+    font-size: 22px;
+  }
+
+  .serviceCard h4 {
+    font-size: 11px;
+  }
+
+  .services {
+    gap: 10px;
+  }
+}

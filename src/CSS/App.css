@@ -1,0 +1,99 @@
+
+
+
+
+/* gatewayreport page start ================================================================================== */
+ .mainContent {
+            margin-left: 220px;
+            padding: 20px;
+            min-height: 100vh;
+            font-family: "Segoe UI", sans-serif;
+            background: #eef2f7;
+            box-sizing: border-box;
+          }
+
+          .filterBox {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center; /* CENTERED horizontally */
+            align-items: center;     /* CENTER vertically */
+            background: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+          }
+
+          .datePicker {
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+          }
+
+          .searchBtn {
+            padding: 10px 20px;
+            background: #0e1f30;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            align-self: center;
+          }
+
+          .center { text-align: center; }
+          .error { color: red; text-align: center; }
+
+          .tableWrapper {
+            overflow-x: auto;
+            background: #fff;
+            border-radius: 8px;
+            padding: 10px;
+          }
+
+         .nicetabl {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+          }
+
+          .hlwguys, .hmm {
+            padding: 12px;
+            text-align: center;
+            font-size: 14px;
+            border-bottom: 1px solid #eee;
+          }
+
+          .hlwguys { background: #001427; color: #fff; }
+          td.success { color: green; font-weight: 600; }
+          td.failed { color: red; font-weight: 600; }
+          td.pending { color: orange; font-weight: 600; }
+
+          @media (max-width: 768px) {
+            .mainContent { margin-left: 0; padding: 10px; }
+            .filterBox { flex-direction: column; }
+            .searchBtn { width: 100%; }
+            table, thead, tbody, .hlwguys, .hmm, .hlw { display: block; }
+            thead tr { display: none; }
+            .hlw {
+              margin-bottom: 15px;
+              border: 1px solid #ddd;
+              border-radius: 8px;
+              padding: 10px;
+              background: #f9f9f9;
+            }
+            .hmm {
+              text-align: right;
+              padding-left: 50%;
+              position: relative;
+              border: none;
+            }
+            .hmm::before {
+              content: attr(data-label);
+              position: absolute;
+              left: 10px;
+              width: 95%;
+              text-align: left;
+              font-weight: bold;
+            }
+          }
