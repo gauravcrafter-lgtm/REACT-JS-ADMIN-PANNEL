@@ -13,16 +13,21 @@ const SERVICES = [
 ];
 
 function Login() {
+  // State for form inputs
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  
+  // State for UI only (not sent to API)
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  
   const navigate = useNavigate();
 
   const LOGIN_API = process.env.REACT_APP_API_LOGIN;
   const PORTAL_ID = process.env.REACT_APP_PORTAL_ID;
   const AGENCY_KEY = process.env.REACT_APP_AGENCY_KEY;
+  const AgencyType = 0 ;
 
   // Redirect if already logged in
   useEffect(() => {
@@ -42,38 +47,59 @@ function Login() {
     setLoading(true);
 
     try {
+      // ✅ CLEAN REQUEST PAYLOAD (only what API needs)
+      const payload = {
+        AgencyKey: AGENCY_KEY,
+  EmailId: email,
+  Password: password,
+  PortalId: Number(PORTAL_ID),
+  AccountNo: 0,
+  IsB2C: false,
+  IsTC: true,
+  AgencyType: 0,
+      };
+debugger;
+    console.log("📤 Login Request:", {
+  AgencyKey: AGENCY_KEY,
+  EmailId: email,
+  Password: "***",
+  PortalId: Number(PORTAL_ID),
+  AccountNo: 0,
+  IsB2C: false,
+  IsTC: true,
+  AgencyType: 0,
+});
+console.log("Login Payload =>", payload);
       const response = await fetch(LOGIN_API, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          UserEmail: email,
-          UserPassword: password,
-          IsB2B: true,
-          PortalId: Number(PORTAL_ID),
-          AccountNo: PORTAL_ID,
-          AgencyKey: AGENCY_KEY,
-        }),
+        body: JSON.stringify(payload), // ✅ Clean payload
       });
-
+debugger;
       const data = await response.json();
-      console.log("Login Response:", data);
 
-      if (response.ok && data.UserStatus === "Success") {
+      console.log("📥 Login Response:", data);
+      console.log("Status Code:", response.status);
+
+     if (response.ok && data.ResponseStatus === 1) {
+        console.log("✅ Login Success!");
+
         // 3 din ki session expiry
         const expiry = new Date().getTime() + 3 * 24 * 60 * 60 * 1000;
 
         localStorage.setItem("isLoggedIn", "true");
-        localStorage.setItem("token", data.Token || "");
+        localStorage.setItem("token", data.APIToken  || "");
         localStorage.setItem("email", data.User?.Email || email);
-        localStorage.setItem("sessionExpiry", expiry);
+        localStorage.setItem("sessionExpiry", expiry.toString());
 
         navigate("/dashboard");
       } else {
+        console.log("❌ Login Failed:", data.Message);
         setError(data.Message || "Invalid Email or Password. Please try again.");
       }
     } catch (err) {
+      console.error("🔴 Server Error:", err);
       setError("Server error. Please try again later.");
-      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -139,7 +165,14 @@ function Login() {
                     autoComplete="current-password"
                     required
                   />
-                  
+                  <button
+                    type="button"
+                    className="toggle-password"
+                    onClick={() => setShowPassword(!showPassword)}
+                    aria-label="Toggle password visibility"
+                  >
+                    {showPassword ? "👁️" : "👁️‍🗨️"}
+                  </button>
                 </div>
               </div>
 

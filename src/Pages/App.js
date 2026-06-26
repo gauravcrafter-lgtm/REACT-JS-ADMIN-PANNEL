@@ -55,7 +55,66 @@
 // }
 
 // export default App;
+
+// import { Routes, Route, Navigate, Outlet } from "react-router-dom";
+// import Login from "./Login";
+// import Dashboard from "./Dashboard";
+// import Flights from "./Flights";
+// import Usermaster from "./Usermaster";
+// import Depositrequest from "./Depositrequest";
+// import Agencyledger from "./Agencyledger";
+// import Gatewayreport from "./Gatewayreport";
+// import Flightbooking from "./Flightbooking";
+// import Ticketsss from "./Ticketsss";
+// import Viewticket from "./Viewticket";
+// import Markups from "./Markups";
+// import EditAgency from "./EditAgency";     
+// import UpdateAgency from "./UpdateAgency"; 
+// import Invoice from "./Invoice"; 
+
+
+// // ✅ 1. ProtectedRoute ko App ke BAHAR banayein aur Outlet ka use karein
+// const ProtectedRoute = () => {
+//   const isLoggedIn = localStorage.getItem("isLoggedIn");
+//   // Agar logged in hai toh child routes (Outlet) dikhao, nahi toh login par bhej do
+//   return isLoggedIn ? <Outlet /> : <Navigate to="/login" replace />;
+// };
+
+// function App() {
+//   return (
+//     <Routes>
+//       {/* Public Route */}
+//       <Route path="/login" element={<Login />} />
+
+//       {/* ✅ 2. Saare Private Routes ko iske andar wrap kar dein */}
+//       <Route element={<ProtectedRoute />}>
+//         <Route path="/dashboard" element={<Dashboard />} />
+//         <Route path="/flights" element={<Flights />} />
+//         <Route path="/usermaster" element={<Usermaster />} />
+//         <Route path="/depositrequest" element={<Depositrequest />} />
+//         <Route path="/agencyledger" element={<Agencyledger />} />
+//         <Route path="/gatewayreport" element={<Gatewayreport />} />
+//         <Route path="/flightbooking" element={<Flightbooking />} />
+//         <Route path="/viewticket" element={<Viewticket />} />
+//         <Route path="/markups" element={<Markups />} />
+//         <Route path="/ticket/:id" element={<Ticketsss />} />
+//         <Route path="/edit-agency" element={<EditAgency />} />
+//         <Route path="/update-agency" element={<UpdateAgency />} />
+//          <Route path="/Invoice/:txnId" element={<Invoice />} />
+
+//       </Route>
+
+//       {/* Default redirect */}
+//       <Route path="*" element={<Navigate to="/login" replace />} />
+//     </Routes>
+//   );
+// }
+
+// export default App;
+
+
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
+
 import Login from "./Login";
 import Dashboard from "./Dashboard";
 import Flights from "./Flights";
@@ -67,26 +126,27 @@ import Flightbooking from "./Flightbooking";
 import Ticketsss from "./Ticketsss";
 import Viewticket from "./Viewticket";
 import Markups from "./Markups";
-import EditAgency from "./EditAgency";     
-import UpdateAgency from "./UpdateAgency"; 
-import Invoice from "./Invoice"; 
 
+import EditAgency from "./EditAgency";
+import UpdateAgency from "./UpdateAgency";
+import Invoice from "./Invoice";
 
-// ✅ 1. ProtectedRoute ko App ke BAHAR banayein aur Outlet ka use karein
+// Protected Route
 const ProtectedRoute = () => {
   const isLoggedIn = localStorage.getItem("isLoggedIn");
-  // Agar logged in hai toh child routes (Outlet) dikhao, nahi toh login par bhej do
   return isLoggedIn ? <Outlet /> : <Navigate to="/login" replace />;
 };
 
 function App() {
   return (
     <Routes>
-      {/* Public Route */}
+
+      {/* Public */}
       <Route path="/login" element={<Login />} />
 
-      {/* ✅ 2. Saare Private Routes ko iske andar wrap kar dein */}
+      {/* Protected */}
       <Route element={<ProtectedRoute />}>
+
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/flights" element={<Flights />} />
         <Route path="/usermaster" element={<Usermaster />} />
@@ -96,15 +156,19 @@ function App() {
         <Route path="/flightbooking" element={<Flightbooking />} />
         <Route path="/viewticket" element={<Viewticket />} />
         <Route path="/markups" element={<Markups />} />
-        <Route path="/ticket/:id" element={<Ticketsss />} />
+
+        {/* Agency Flow */}
         <Route path="/edit-agency" element={<EditAgency />} />
         <Route path="/update-agency" element={<UpdateAgency />} />
-         <Route path="/Invoice/:txnId" element={<Invoice />} />
+
+        {/* Invoice */}
+        <Route path="/invoice/:txnId" element={<Invoice />} />
 
       </Route>
 
-      {/* Default redirect */}
+      {/* fallback */}
       <Route path="*" element={<Navigate to="/login" replace />} />
+
     </Routes>
   );
 }

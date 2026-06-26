@@ -5,15 +5,15 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Footer2 from "./Footer2";
 
 export default function Flights() {
-  const [flights, setFlights]   = useState([]);
-  const [loading, setLoading]   = useState(true);
-  const [error, setError]       = useState("");
-  const [search, setSearch]     = useState("");
+  const [flights, setFlights] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [search, setSearch] = useState("");
 
   const navigate = useNavigate();
   const location = useLocation();
 
-  const API_URL  = process.env.REACT_APP_API_3;
+  const API_URL = process.env.REACT_APP_API_3;
   const ADMIN_KEY = process.env.REACT_APP_ADMIN_KEY;
   const PORTAL_ID = process.env.REACT_APP_PORTAL_ID;
 
@@ -39,13 +39,15 @@ export default function Flights() {
       });
 
       const data = await response.json();
+
       let arr = [];
       if (response.ok) {
-        if      (Array.isArray(data))        arr = data;
-        else if (Array.isArray(data.data))   arr = data.data;
-        else if (Array.isArray(data.Data))   arr = data.Data;
+        if (Array.isArray(data)) arr = data;
+        else if (Array.isArray(data.data)) arr = data.data;
+        else if (Array.isArray(data.Data)) arr = data.Data;
         else if (Array.isArray(data.result)) arr = data.result;
-        setFlights(arr);
+
+        setFlights(arr || []);
       } else {
         setError(data?.Message || "No Data Found");
       }
@@ -56,21 +58,27 @@ export default function Flights() {
     }
   }, [API_URL, ADMIN_KEY, PORTAL_ID]);
 
-  useEffect(() => { fetchFlights(); }, [fetchFlights]);
-
+  // initial load
   useEffect(() => {
-    if (location.state?.refreshed) fetchFlights();
-  }, [location.state?.refreshed]);
+    fetchFlights();
+  }, [fetchFlights]);
 
-  // Filtered list
-  const filtered = flights.filter((a) =>
-    !search ||
-    a.AgencyName?.toLowerCase().includes(search.toLowerCase()) ||
-    a.AgencyCode?.toLowerCase().includes(search.toLowerCase()) ||
-    a.AgenyEmail?.toLowerCase().includes(search.toLowerCase())
+useEffect(() => {
+  if (location.state?.refresh) {
+    fetchFlights();
+
+    navigate("/flights", { replace: true });
+  }
+}, [location.state?.refresh]);
+  const filtered = flights.filter(
+    (a) =>
+      !search ||
+      a.AgencyName?.toLowerCase().includes(search.toLowerCase()) ||
+      a.AgencyCode?.toLowerCase().includes(search.toLowerCase()) ||
+      a.AgenyEmail?.toLowerCase().includes(search.toLowerCase())
   );
 
-  const activeCount   = flights.filter((a) => a.AgencyStatus).length;
+  const activeCount = flights.filter((a) => a.AgencyStatus).length;
   const inactiveCount = flights.filter((a) => !a.AgencyStatus).length;
 
   return (
@@ -79,7 +87,6 @@ export default function Flights() {
 
       <div className="fl-wrapper">
 
-        {/* ── Header ── */}
         <div className="fl-header">
           <div className="fl-header-left">
             <div className="fl-page-title">
@@ -91,7 +98,6 @@ export default function Flights() {
           </div>
         </div>
 
-        {/* ── Stats ── */}
         <div className="fl-stats">
           <div className="fl-stat-card">
             <div className="fl-stat-icon blue">🏢</div>
@@ -100,6 +106,7 @@ export default function Flights() {
               <div className="fl-stat-label">Total Agencies</div>
             </div>
           </div>
+
           <div className="fl-stat-card">
             <div className="fl-stat-icon green">✅</div>
             <div>
@@ -107,6 +114,7 @@ export default function Flights() {
               <div className="fl-stat-label">Active</div>
             </div>
           </div>
+
           <div className="fl-stat-card">
             <div className="fl-stat-icon red">❌</div>
             <div>
@@ -116,23 +124,21 @@ export default function Flights() {
           </div>
         </div>
 
-        {/* ── Table Card ── */}
         <div className="fl-table-card">
 
-          {/* Topbar */}
           <div className="fl-table-topbar">
             <div className="fl-table-title">
               All Agencies ({filtered.length})
             </div>
+
             <input
               className="fl-search-box"
-              placeholder="🔍  Search agency..."
+              placeholder="🔍 Search agency..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
 
-          {/* Loading */}
           {loading && (
             <div className="fl-loading">
               <div className="fl-spinner" />
@@ -140,17 +146,14 @@ export default function Flights() {
             </div>
           )}
 
-          {/* Error */}
           {!loading && error && (
             <div className="fl-error">⚠️ {error}</div>
           )}
 
-          {/* Empty */}
           {!loading && !error && filtered.length === 0 && (
             <div className="fl-empty">No agencies found.</div>
           )}
 
-          {/* ── Desktop Table ── */}
           {!loading && !error && filtered.length > 0 && (
             <div className="fl-table-scroll">
               <table className="fl-table">
@@ -166,94 +169,57 @@ export default function Flights() {
                     <th>Actions</th>
                   </tr>
                 </thead>
+
                 <tbody>
                   {filtered.map((a, i) => (
                     <tr key={i}>
-                      <td style={{ color: "var(--fl-text-3)", fontFamily: "'DM Mono', monospace", fontSize: "12px" }}>
-                        {String(i + 1).padStart(2, "0")}
-                      </td>
+                      <td>{String(i + 1).padStart(2, "0")}</td>
+
                       <td>
                         <div className="fl-agency-cell">
                           <div className="fl-agency-avatar">
                             {(a.AgencyName || "A").charAt(0).toUpperCase()}
                           </div>
                           <div>
-                            <div className="fl-agency-name">{a.AgencyName}</div>
-                            <div className="fl-agency-code">{a.AgencyCode}</div>
+                            <div className="fl-agency-name">
+                              {a.AgencyName}
+                            </div>
+                            <div className="fl-agency-code">
+                              {a.AgencyCode}
+                            </div>
                           </div>
                         </div>
                       </td>
-                      <td style={{ color: "var(--fl-text-2)" }}>{a.AgenyEmail}</td>
-                      <td style={{ fontFamily: "'DM Mono', monospace", fontSize: "13px" }}>{a.MobileNumber}</td>
-                      <td>
-                        <span className="fl-balance">₹ {a.CreditBalance}</span>
-                      </td>
-                      <td>
-                        <span className="fl-balance">₹ {a.Limit}</span>
-                      </td>
+
+                      <td>{a.AgenyEmail}</td>
+                      <td>{a.MobileNumber}</td>
+                      <td>₹ {a.CreditBalance}</td>
+                      <td>₹ {a.Limit}</td>
+
                       <td>
                         <span className={`fl-badge ${a.AgencyStatus ? "active" : "inactive"}`}>
                           {a.AgencyStatus ? "Active" : "Inactive"}
                         </span>
                       </td>
+
                       <td>
-                        <button
-                          className="fl-btn-edit"
-                          onClick={() => navigate("/Threeinone", { state: a })}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          className="fl-btn-update"
-                          onClick={() => navigate("/edit-agency", { state: a })}
-                        >
-                          Update
-                        </button>
+<button
+onClick={() =>
+  navigate("/edit-agency", {
+    state: {
+      AgencyKey: a.AgencyKey,
+    },
+  })
+}
+>
+  Edit
+</button>
                       </td>
+
                     </tr>
                   ))}
                 </tbody>
               </table>
-            </div>
-          )}
-
-          {/* ── Mobile Cards ── */}
-          {!loading && !error && filtered.length > 0 && (
-            <div className="fl-card-view">
-              {filtered.map((a, i) => (
-                <div key={i} className="fl-mobile-card">
-                  <div className="fl-mobile-card-header">
-                    <div>
-                      <div className="fl-mobile-card-title">{a.AgencyName}</div>
-                      <div style={{ fontSize: "12px", color: "var(--fl-text-3)", fontFamily: "'DM Mono', monospace" }}>
-                        {a.AgencyCode}
-                      </div>
-                    </div>
-                    <span className={`fl-badge ${a.AgencyStatus ? "active" : "inactive"}`}>
-                      {a.AgencyStatus ? "Active" : "Inactive"}
-                    </span>
-                  </div>
-                  <div className="fl-mobile-card-row"><b>Email</b> <span>{a.AgenyEmail}</span></div>
-                  <div className="fl-mobile-card-row"><b>Mobile</b> <span>{a.MobileNumber}</span></div>
-                  <div className="fl-mobile-card-row"><b>Balance</b> <span>₹ {a.CreditBalance}</span></div>
-                  <div className="fl-mobile-card-row"><b>Limit</b> <span>₹ {a.Limit}</span></div>
-                  <div className="fl-mobile-card-actions">
-                    
-                    <button
-  className="fl-btn-edit"
-  onClick={() => navigate("/Update-agency", { state: a })}
->
-  Edit
-</button>
-<button
-  className="fl-btn-update"
-  onClick={() => navigate("/edit-agency", { state: a })}
->
-  Update
-</button>
-    </div>
-                </div>
-              ))}
             </div>
           )}
 

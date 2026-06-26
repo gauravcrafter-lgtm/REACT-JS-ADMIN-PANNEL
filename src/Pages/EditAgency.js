@@ -1,112 +1,246 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import Sidebar from "./Sidebar";
-import Footer2 from "./Footer2";
 
 export default function EditAgency() {
   const location = useLocation();
   const navigate = useNavigate();
-  const agencyData = location.state || {};
 
-  // ✅ Prefill from Flights.js state
-  const [email, setEmail] = useState(agencyData.AgenyEmail || "");
-  const [mobile, setMobile] = useState(agencyData.MobileNumber || "");
-  const [status, setStatus] = useState(agencyData.AgencyStatus ?? true);
+  const agencyKey = location.state?.AgencyKey;
 
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [formData, setFormData] = useState({});
 
-  const API_URL = process.env.REACT_APP_API_3 || "https://promo.namantechnolab.com/api/Agent/AgencyProfile";
-  const PORTAL_ID = process.env.REACT_APP_PORTAL_ID || 11;
+  const ADMIN_KEY = process.env.REACT_APP_ADMIN_KEY;
 
-  // ✅ Update
-  const handleUpdate = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage("");
+  // ================= FETCH PROFILE =================
+  useEffect(() => {
+    const fetchAgency = async () => {
+      try {
+        setLoading(true);
 
+        const response = await fetch(
+          "https://promo.namantechnolab.com/api/Agent/AgencyProfile",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              APIToken: null,
+              AgencyKey: agencyKey,
+              IsB2B: true,
+              PortalId: 11,
+              IsTC: false,
+            }),
+          }
+        );
+debugger;
+
+        const data = await response.json();
+   console.log("API Response:", data);
+        setFormData({
+          ...data,
+          Password: "123456",
+            AgencyStatus: data.AgencyStatus ?? true,
+        });
+      } catch (err) {
+        console.log(err);
+        alert("Failed to load agency");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (agencyKey) fetchAgency();
+  }, [agencyKey]);
+
+  // ================= HANDLE CHANGE =================
+  const handleChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+const handleStatusChange = (e) => {
+  setFormData((prev) => ({
+    ...prev,
+    AgencyStatus: e.target.value === "true",
+  }));
+};
+  // ================= UPDATE =================
+  const handleUpdate = async () => {
     try {
-      const response = await fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          AgencyKey: agencyData.AgencyKey,
-          PortalId: Number(PORTAL_ID),
-          AgencyStatus: status,
-          AgencyEmail: email,
-          MobileNumber: mobile,
-        }),
-      });
+      setSaving(true);
 
-      const data = await response.json();
-      console.log("Update Response:", data);
+      const payload = {
+        Tital: null,
+        FirstName: formData.FirstName,
+        LastName: formData.LastName,
+        MobileNo: formData.MobileNumber,
+        LandLine: formData.PhoneNumber || "NA",
+        EmailId: formData.AgenyEmail,
+        Address: formData.AgencyAgddress,
+        City: formData.AgencyCity,
+        State: formData.AgencyState,
+        Country: formData.AgencyCountry,
+        PinCode: formData.PinCode,
+        AgencyName: formData.AgencyName,
+        Password: formData.Password || "123456",
+        GSTN: formData.GSTNumber,
+        PanNo: formData.PanNumber,
+        PanCard: "NA",
+        GSTCertificate: "NA",
+        AddressCertificate: "NA",
+        IsActive: formData.AgencyStatus,
+        AdminKey: ADMIN_KEY,
+        AgencyKey: formData.AgencyKey,
+        IsAdd: false,
+        AgencyCode: formData.AgencyCode,
+        PortalId: formData.PortalId,
+        IsTC: true,
+      };
+debugger;
+      const response = await fetch(
+        "https://api.namantechnolab.com/api/Agent/RegisterAgent",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
 
+      // ⚠️ IMPORTANT FIX (HTML ERROR PROTECTION)
+      const text = await response.text();
+debugger;
+      let result;
+      try {
+        result = JSON.parse(text);
+        console.log("API Response:", result);
+      } catch {
+        throw new Error("Server error (not JSON response)");
+      }
+ console.log("API Response:", result);
       if (response.ok) {
-        setMessage("✅ Agency updated successfully!");
-        setTimeout(() => navigate("/flights", { state: { refreshed: true } }), 1500);
+        alert("Updated Successfully");
+
+        navigate("/flights", {
+          state: { refresh: true },
+        });
       } else {
-        setMessage("⚠️ " + (data?.Message || "Update failed."));
+        alert(result?.Message || "Update Failed");
       }
     } catch (err) {
-      console.error(err);
-      setMessage("⚠️ Network error occurred.");
+      console.log(err);
+      alert("Update Failed / CORS / Server Issue");
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   };
 
-  return (
-    <>
-      <Sidebar />
-      <div className="fl-wrapper" style={{ padding: "20px" }}>
-        <h2>✏️ Edit Agency Profile</h2>
+  if (loading) return <h3>Loading...</h3>;
 
-        {message && (
-          <div style={{
-            padding: "10px",
-            marginBottom: "15px",
-            borderRadius: "4px",
-            backgroundColor: message.includes("✅") ? "#e2f0d9" : "#fce4d6"
-          }}>
-            {message}
-          </div>
-        )}
+ return (
+  <div className="agency-page">
+    <div className="agency-card">
+      <h2>Edit Agency</h2>
 
-        <form onSubmit={handleUpdate} style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", maxWidth: "800px" }}>
-          <div>
-            <label style={{ fontWeight: "bold" }}>Agency Code</label>
-            <input type="text" value={agencyData.AgencyCode || "N/A"} disabled />
-          </div>
+      <div className="form-grid">
+        <div className="form-group">
+          <label>Agency Name</label>
+          <input
+            name="AgencyName"
+            value={formData.AgencyName || ""}
+            onChange={handleChange}
+          />
+        </div>
 
-          <div>
-            <label style={{ fontWeight: "bold" }}>Status</label>
-            <select value={status ? "true" : "false"} onChange={(e) => setStatus(e.target.value === "true")}>
-              <option value="true">Active</option>
-              <option value="false">Inactive</option>
-            </select>
-          </div>
+        <div className="form-group">
+          <label>First Name</label>
+          <input
+            name="FirstName"
+            value={formData.FirstName || ""}
+            onChange={handleChange}
+          />
+        </div>
 
-          <div>
-            <label style={{ fontWeight: "bold" }}>Email ID</label>
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-          </div>
+        <div className="form-group">
+          <label>Last Name</label>
+          <input
+            name="LastName"
+            value={formData.LastName || ""}
+            onChange={handleChange}
+          />
+        </div>
 
-          <div>
-            <label style={{ fontWeight: "bold" }}>Mobile Number</label>
-            <input type="text" value={mobile} onChange={(e) => setMobile(e.target.value)} required />
-          </div>
+        <div className="form-group">
+          <label>Email</label>
+          <input
+            name="AgenyEmail"
+            value={formData.AgenyEmail || ""}
+            onChange={handleChange}
+          />
+        </div>
 
-          <div style={{ gridColumn: "span 2", display: "flex", gap: "10px" }}>
-            <button type="submit" disabled={loading}>
-              {loading ? "Saving Changes..." : "Save Changes"}
-            </button>
-            <button type="button" onClick={() => navigate(-1)}>
-              Cancel
-            </button>
+        <div className="form-group">
+          <label>Mobile Number</label>
+          <input
+            name="MobileNumber"
+            value={formData.MobileNumber || ""}
+            onChange={handleChange}
+          />
+        </div>
+
+        {/* New Status Field */}
+        <div className="form-group">
+          <label>Status</label>
+
+          <div className="status-group">
+            <label className="radio-label">
+              <input
+                type="radio"
+                name="AgencyStatus"
+                value="true"
+                checked={formData.AgencyStatus === true}
+                onChange={handleStatusChange}
+              />
+              Active
+            </label>
+
+            <label className="radio-label">
+              <input
+                type="radio"
+                name="AgencyStatus"
+                value="false"
+                checked={formData.AgencyStatus === false}
+                onChange={handleStatusChange}
+              />
+              Inactive
+            </label>
           </div>
-        </form>
+        </div>
+
+        <div className="form-group full-width">
+          <label>Address</label>
+          <textarea
+            name="AgencyAgddress"
+            rows="4"
+            value={formData.AgencyAgddress || ""}
+            onChange={handleChange}
+          />
+        </div>
       </div>
-      <Footer2 />
-    </>
-  );
+
+      <button
+        className="update-btn"
+        onClick={handleUpdate}
+        disabled={saving}
+      >
+        {saving ? "Updating..." : "Update Agency"}
+      </button>
+    </div>
+  </div>
+);
 }
