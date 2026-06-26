@@ -204,13 +204,16 @@ useEffect(() => {
 
                       <td>
 <button
-onClick={() =>
-  navigate("/edit-agency", {
-    state: {
-      AgencyKey: a.AgencyKey,
-    },
-  })
-}
+  style={{
+    padding: "8px 16px",
+    backgroundColor: "#007bff",
+    color: "white",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
+    fontSize: "14px"
+  }}
+  onClick={() => navigate("/edit-agency", { state: { AgencyKey: a.AgencyKey } })}
 >
   Edit
 </button>
