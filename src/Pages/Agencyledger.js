@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Footer2 from "./Footer2";
 import "../CSS/Agencyledger.css";
@@ -12,6 +13,8 @@ export default function AgencyLedger() {
   const [fromDate, setFromDate]     = useState("");
   const [toDate, setToDate]         = useState("");
   const [searched, setSearched]     = useState(false);
+
+  const navigate = useNavigate();
 
   const API_URL   = process.env.REACT_APP_API_AGENCY;
   const AGENCY_KEY = process.env.REACT_APP_AGENCY_KEY;
@@ -226,6 +229,10 @@ export default function AgencyLedger() {
                     <th>Debit</th>
                     <th>Credit</th>
                     <th>Balance</th>
+                    <th>Invoice</th>
+                    <th>Ticket</th>
+                    <th>Update</th>
+
                   </tr>
                 </thead>
                 <tbody>
@@ -249,6 +256,22 @@ export default function AgencyLedger() {
                       <td><span className="al-debit">₹{Number(item.Debit || 0).toLocaleString("en-IN")}</span></td>
                       <td><span className="al-credit">₹{Number(item.Credit || 0).toLocaleString("en-IN")}</span></td>
                       <td><span className="al-balance">₹{Number(item.CreditBalance || 0).toLocaleString("en-IN")}</span></td>
+                      <td>
+                        <button
+                          onClick={() => navigate(`/invoice/${item.TransactionId}`)}
+                          style={styles.invoiceBtn}
+                        >
+                          Invoice
+                        </button>
+                      </td>
+                      <td>
+                        <button
+                          onClick={() => navigate(`/ticket/${item.TransactionId}`)}
+                          style={styles.ticketBtn}
+                        >
+                          Ticket
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -263,3 +286,28 @@ export default function AgencyLedger() {
     </>
   );
 }
+
+const styles = {
+  invoiceBtn: {
+    padding: "6px 14px",
+    fontSize: "12px",
+    fontWeight: 600,
+    border: "none",
+    borderRadius: "6px",
+    cursor: "pointer",
+    backgroundColor: "#e8f0fe",
+    color: "#1a56db",
+    whiteSpace: "nowrap",
+  },
+  ticketBtn: {
+    padding: "6px 14px",
+    fontSize: "12px",
+    fontWeight: 600,
+    border: "none",
+    borderRadius: "6px",
+    cursor: "pointer",
+    backgroundColor: "#e6f7ee",
+    color: "#0f9d58",
+    whiteSpace: "nowrap",
+  },
+};

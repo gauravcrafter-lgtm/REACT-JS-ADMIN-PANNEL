@@ -126,10 +126,10 @@ import Flightbooking from "./Flightbooking";
 import Ticketsss from "./Ticketsss";
 import Viewticket from "./Viewticket";
 import Markups from "./Markups";
-
 import EditAgency from "./EditAgency";
 import UpdateAgency from "./UpdateAgency";
 import Invoice from "./Invoice";
+
 
 // Protected Route
 const ProtectedRoute = () => {
@@ -157,12 +157,17 @@ function App() {
         <Route path="/viewticket" element={<Viewticket />} />
         <Route path="/markups" element={<Markups />} />
 
+
+
+
         {/* Agency Flow */}
         <Route path="/edit-agency" element={<EditAgency />} />
         <Route path="/update-agency" element={<UpdateAgency />} />
 
         {/* Invoice */}
         <Route path="/invoice/:txnId" element={<Invoice />} />
+          {/* Ticket */}
+        <Route path="/ticket/:id" element={<Ticketsss />} />
 
       </Route>
 

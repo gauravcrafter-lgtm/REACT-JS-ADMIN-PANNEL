@@ -63,13 +63,13 @@ export default function Flights() {
     fetchFlights();
   }, [fetchFlights]);
 
-useEffect(() => {
-  if (location.state?.refresh) {
-    fetchFlights();
+  useEffect(() => {
+    if (location.state?.refresh) {
+      fetchFlights();
+      navigate("/flights", { replace: true });
+    }
+  }, [location.state?.refresh, fetchFlights, navigate]);
 
-    navigate("/flights", { replace: true });
-  }
-}, [location.state?.refresh]);
   const filtered = flights.filter(
     (a) =>
       !search ||
@@ -86,7 +86,6 @@ useEffect(() => {
       <Sidebar />
 
       <div className="fl-wrapper">
-
         <div className="fl-header">
           <div className="fl-header-left">
             <div className="fl-page-title">
@@ -125,7 +124,6 @@ useEffect(() => {
         </div>
 
         <div className="fl-table-card">
-
           <div className="fl-table-topbar">
             <div className="fl-table-title">
               All Agencies ({filtered.length})
@@ -165,6 +163,7 @@ useEffect(() => {
                     <th>Mobile</th>
                     <th>Balance</th>
                     <th>Limit</th>
+                    <th>Agency Type</th> {/* <-- Naya Column Header */}
                     <th>Status</th>
                     <th>Actions</th>
                   </tr>
@@ -196,6 +195,13 @@ useEffect(() => {
                       <td>₹ {a.CreditBalance}</td>
                       <td>₹ {a.Limit}</td>
 
+                      {/* <-- Naya Column Data */}
+                      <td>
+                        <span className="fl-agency-type-text">
+                          {a.AgencyType || "N/A"} 
+                        </span>
+                      </td>
+
                       <td>
                         <span className={`fl-badge ${a.AgencyStatus ? "active" : "inactive"}`}>
                           {a.AgencyStatus ? "Active" : "Inactive"}
@@ -203,29 +209,44 @@ useEffect(() => {
                       </td>
 
                       <td>
-<button
-  style={{
-    padding: "8px 16px",
-    backgroundColor: "#007bff",
-    color: "white",
-    border: "none",
-    borderRadius: "4px",
-    cursor: "pointer",
-    fontSize: "14px"
-  }}
-  onClick={() => navigate("/edit-agency", { state: { AgencyKey: a.AgencyKey } })}
->
-  Edit
-</button>
-                      </td>
+                        <div style={{ display: "flex", gap: "8px" }}>
+                          <button
+                            style={{
+                              padding: "8px 16px",
+                              backgroundColor: "#007bff",
+                              color: "white",
+                              border: "none",
+                              borderRadius: "4px",
+                              cursor: "pointer",
+                              fontSize: "14px"
+                            }}
+                            onClick={() => navigate("/edit-agency", { state: { AgencyKey: a.AgencyKey } })}
+                          >
+                            Edit
+                          </button>
 
+                          <button
+                            style={{
+                              padding: "8px 16px",
+                             backgroundColor: "#007bff",
+                              color: "white",
+                              border: "none",
+                              borderRadius: "4px",
+                              cursor: "pointer",
+                              fontSize: "14px"
+                            }}
+                            onClick={() => navigate("/update-agency", { state: { AgencyKey: a.AgencyKey } })}
+                          >
+                            Update
+                          </button>
+                        </div>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
           )}
-
         </div>
       </div>
 
