@@ -31,7 +31,7 @@ const dashboardItems = [
   { label: "Flight Booking",      path: "/flightbooking"   },
   { label: "Ticketsss",           path: null               },
   { label: "Edit",                path: "/Edit"            },
-  { label: "Flight Cancellation", path: null               },
+  { label: "Flight Cancellation", path: "/Flightcancel"               },
   { label: "Bus Cancellation",    path: null               },
   { label: "View Ticket",         path: "/Viewticket"      },
   { label: "Hotel Cancellation",  path: null               },
@@ -91,10 +91,10 @@ export default function Dashboard() {
         {/* ── Top Header ── */}
         <div className="dashboard-header">
           <div className="dashboard-header-title">
-            <img
-              src="https://www.tripcaliber.com/Content/Images/logo.webp"
-              alt="Naman Technolab Logo"
-              className="header-logo"
+         <img
+              src="/tripji.png"
+              className="img-thumbnail"
+              alt="Travel illustration"
             />
             <div className="header-greeting">Welcome back 👋</div>
           </div>

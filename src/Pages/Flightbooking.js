@@ -1173,7 +1173,7 @@ export default function FlightBooking() {
                         <td>
                           <button
                             onClick={() =>
-                              navigate(`/Edit/${b.TransactionId}`)
+                              navigate(`/Editpagedit/${b.TransactionId}`)
                             }
                             className="fb-action-btn edit"
                           >

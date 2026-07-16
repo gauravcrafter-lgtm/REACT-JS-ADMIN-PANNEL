@@ -22,7 +22,7 @@ export default function Footer2() {
       }}
     >
       <div style={{ color: "grey" }}>
-        © 2025 - 2026 TripCaliber
+        © 2025 - 2026 BOOKBYOWN
       </div>
 
       <div style={{ whiteSpace: "nowrap", color: "grey" }}>

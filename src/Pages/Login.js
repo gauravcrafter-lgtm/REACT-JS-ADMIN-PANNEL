@@ -13,28 +13,23 @@ const SERVICES = [
 ];
 
 function Login() {
-  // State for form inputs
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  
-  // State for UI only (not sent to API)
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  
+
   const navigate = useNavigate();
 
   const LOGIN_API = process.env.REACT_APP_API_LOGIN;
   const PORTAL_ID = process.env.REACT_APP_PORTAL_ID;
   const AGENCY_KEY = process.env.REACT_APP_AGENCY_KEY;
-  const AgencyType = 0 ;
 
-  // Redirect if already logged in
   useEffect(() => {
     const token = localStorage.getItem("token");
     const isLoggedIn = localStorage.getItem("isLoggedIn");
     const expiry = localStorage.getItem("sessionExpiry");
-    const isExpired = !expiry || new Date().getTime() > parseInt(expiry);
+    const isExpired = !expiry || new Date().getTime() > parseInt(expiry, 10);
 
     if (token && isLoggedIn === "true" && !isExpired) {
       navigate("/dashboard");
@@ -47,58 +42,39 @@ function Login() {
     setLoading(true);
 
     try {
-      // ✅ CLEAN REQUEST PAYLOAD (only what API needs)
       const payload = {
         AgencyKey: AGENCY_KEY,
-  EmailId: email,
-  Password: password,
-  PortalId: Number(PORTAL_ID),
-  AccountNo: 0,
-  IsB2C: false,
-  IsTC: true,
-  AgencyType: 0,
+        EmailId: email,
+        Password: password,
+        PortalId: Number(PORTAL_ID),
+        AccountNo: 0,
+        IsB2C: false,
+        IsTC: true,
+        AgencyType: 2, // 👉 Fixed as Agent (use 1 if Distributor)
       };
-debugger;
-    console.log("📤 Login Request:", {
-  AgencyKey: AGENCY_KEY,
-  EmailId: email,
-  Password: "***",
-  PortalId: Number(PORTAL_ID),
-  AccountNo: 0,
-  IsB2C: false,
-  IsTC: true,
-  AgencyType: 0,
-});
-console.log("Login Payload =>", payload);
+
       const response = await fetch(LOGIN_API, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload), // ✅ Clean payload
+        body: JSON.stringify(payload),
       });
-debugger;
+
       const data = await response.json();
 
-      console.log("📥 Login Response:", data);
-      console.log("Status Code:", response.status);
-
-     if (response.ok && data.ResponseStatus === 1) {
-        console.log("✅ Login Success!");
-
-        // 3 din ki session expiry
+      if (response.ok && data.ResponseStatus === 1) {
         const expiry = new Date().getTime() + 3 * 24 * 60 * 60 * 1000;
 
         localStorage.setItem("isLoggedIn", "true");
-        localStorage.setItem("token", data.APIToken  || "");
+        localStorage.setItem("token", data.APIToken || "");
         localStorage.setItem("email", data.User?.Email || email);
         localStorage.setItem("sessionExpiry", expiry.toString());
 
         navigate("/dashboard");
       } else {
-        console.log("❌ Login Failed:", data.Message);
         setError(data.Message || "Invalid Email or Password. Please try again.");
       }
     } catch (err) {
-      console.error("🔴 Server Error:", err);
+      console.error("Login request failed:", err);
       setError("Server error. Please try again later.");
     } finally {
       setLoading(false);
@@ -108,23 +84,14 @@ debugger;
   return (
     <div>
       <div className="mains">
-
-        {/* Page Title */}
         <h1 className="title">
           Welcome to <br />
-          <span>TripCaliber Admin</span> Travel Portal
+          <span>BOOKBYOWN Admin</span> Travel Portal
         </h1>
 
-        {/* Main Card */}
         <div className="container">
-
-          {/* Left — Illustration */}
           <div className="left">
-            <img
-              src="/tripji.png"
-              className="img-thumbnail"
-              alt="Travel illustration"
-            />
+            <img src="/tripji.png" className="img-thumbnail" alt="Travel illustration" />
             <p>
               The cutting-edge business travel platform that saves
               <br />
@@ -132,7 +99,6 @@ debugger;
             </p>
           </div>
 
-          {/* Right — Login Form */}
           <div className="right">
             <h3>Login to Your Account</h3>
             <p className="subtext">Enter your credentials to continue</p>
@@ -169,35 +135,21 @@ debugger;
                     type="button"
                     className="toggle-password"
                     onClick={() => setShowPassword(!showPassword)}
-                    aria-label="Toggle password visibility"
                   >
-                    {/* {showPassword ? "👁️" : "👁️‍🗨️"} */}
+                    👁
                   </button>
                 </div>
               </div>
 
-              {/* Error Message */}
-              {error && (
-                <div className="error-box" role="alert">
-                  ⚠ {error}
-                </div>
-              )}
+              {error && <div className="error-box">⚠ {error}</div>}
 
-              {/* Submit */}
               <button type="submit" className="login-btn" disabled={loading}>
-                {loading ? (
-                  <span className="btn-loading">
-                    <span className="spinner" /> Logging in...
-                  </span>
-                ) : (
-                  "LOGIN"
-                )}
+                {loading ? "Logging in..." : "LOGIN"}
               </button>
             </form>
           </div>
         </div>
 
-        {/* Service Cards */}
         <div className="services">
           {SERVICES.map(({ icon, label }) => (
             <div className="serviceCard" key={label}>

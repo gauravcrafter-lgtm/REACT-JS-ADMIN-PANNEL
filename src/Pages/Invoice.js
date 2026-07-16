@@ -14,7 +14,6 @@ const Invoice = () => {
     try {
       setLoading(true);
       console.log("🔍 Fetching invoice for txnId:", txnId);
-      debugger; // ✅ NOW THIS WILL RUN
 
       const payload = {
         APIRequestType: 4,
@@ -49,7 +48,6 @@ const Invoice = () => {
 
       const data = await response.json();
       console.log("✅ Invoice data received:", data);
-      debugger; // ✅ WILL STOP HERE when data arrives
 
       setInvoiceData(data);
       setLoading(false);
@@ -111,13 +109,13 @@ const Invoice = () => {
   }
 
   // ✅ Show Invoice Data
-  if (!invoiceData) {
-    return (
-      <div style={{ textAlign: "center", padding: "50px" }}>
-        <h3>No invoice data available</h3>
-      </div>
-    );
-  }
+  // if (!invoiceData) {
+  //   return (
+  //     <div style={{ textAlign: "center", padding: "50px" }}>
+  //       <h3>No invoice data available</h3>
+  //     </div>
+  //   );
+  // }
 
   return (
      <div>
