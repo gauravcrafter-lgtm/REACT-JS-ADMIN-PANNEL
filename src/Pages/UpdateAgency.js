@@ -26,7 +26,7 @@ export default function UpdateAgency() {
         headers: { "Content-Type": "application/json" },
         // 2. Request Body ko naye format ke hisab se update kiya
         body: JSON.stringify({
-          AdminKey: process.env.REACT_APP_ADMIN_KEY || "02ad68f3-9ae6-4148-85b1-e61d1f03991f",
+          AdminKey: process.env.REACT_APP_ADMIN_KEY || "4AC0F2DD-66C2-4AC1-8AFD-DE615E223A4A",
           TransactionId: Number(bookingData.TransactionId) || 9125,
           BookingId: bookingData.BookingId || "FLY160620269125",
           GDSPnr: bookingData.GDSPnr || "8jhkjktuu6",

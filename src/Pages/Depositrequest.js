@@ -238,7 +238,6 @@
 //   );
 // }
 
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker";
@@ -256,6 +255,9 @@ export default function Depositrequest() {
 
   const [fromDate, setFromDate] = useState(new Date("2024-01-01"));
   const [toDate, setToDate]     = useState(new Date());
+
+  
+  const [paymentStatus, setPaymentStatus] = useState("");
 
   const API_URL   = process.env.REACT_APP_API_DEPOSIT;
   const PORTAL_ID = process.env.REACT_APP_PORTAL_ID;
@@ -275,6 +277,8 @@ export default function Depositrequest() {
     setRecords([]);
     setSearched(true);
 
+    const statusPayload = paymentStatus === "" ? null : Number(paymentStatus);
+
     try {
       const response = await fetch(API_URL, {
         method: "POST",
@@ -284,7 +288,7 @@ export default function Depositrequest() {
           BookingId: null,
           AgencyCode: null,
           TransactionType: 0,
-          PaymentStatus: 3,
+          PaymentStatus: statusPayload,
           FromDate: formatDate(fromDate),
           ToDate: formatDate(toDate),
           PortalId: Number(PORTAL_ID),
@@ -293,6 +297,7 @@ export default function Depositrequest() {
       });
 
       const data = await response.json();
+      console.log("RAW API RESPONSE:", data); // 🔍 DEBUG
       const list = data?.DeHistory || [];
 
       if (response.ok && Array.isArray(list)) {
@@ -357,6 +362,21 @@ export default function Depositrequest() {
                 maxDate={new Date()}
                 minDate={fromDate}
               />
+            </div>
+
+            <div className="dr-field">
+              <label>Payment Status</label>
+              <select
+                className="dateInput"
+                value={paymentStatus}
+                onChange={(e) => setPaymentStatus(e.target.value)}
+                style={{ height: "38px" }}
+              >
+                <option value="">All</option>
+                <option value="0">Confirm</option>
+                <option value="1">Pending</option>
+                <option value="2">Rejected</option>
+              </select>
             </div>
 
             <button

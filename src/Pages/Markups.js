@@ -1,885 +1,3 @@
-// import React, { useState, useEffect } from "react";
-// import Sidebar from "./Sidebar";
-// import Footer2 from "./Footer2";
-
-// const Markups = () => {
-//   const [value, setValue] = useState("");
-//   const [apiResponse, setApiResponse] = useState(null);
-
-//   useEffect(() => {
-//     fetchMarkupData();
-//   }, []);
-
-//   const fetchMarkupData = async () => {
-//     try {
-//       const response = await fetch(
-//         "https://api.namantechnolab.com/api/Admin/AdminOperation",
-//         {
-//           method: "POST",
-//           headers: {
-//             "Content-Type": "application/json",
-//           },
-//           body: JSON.stringify({
-//             FromDate: null,
-//             ToDate: null,
-//             MarkupRq: null,
-//             APIRequestType: 0,
-//             AgencyKey: "02AD68F3-9AE6-4148-85B1-E61D1F03991F",
-//             AccountNo: 11,
-//           }),
-//         }
-//       );
-
-//       const result = await response.json();
-
-//       console.log("API Response:", result);
-//       setApiResponse(result);
-//     } catch (error) {
-//       console.error("API Error:", error);
-//     }
-//   };
-//   const engineTypes = [
-//   { id: 1, name: "Amadeus" },
-//   { id: 2, name: "Galileo" },
-//   { id: 3, name: "SpiceJet" },
-//   { id: 4, name: "GoIndigo" },
-//   { id: 5, name: "GoAir" },
-//   { id: 6, name: "GoAirAPI" },
-//   { id: 7, name: "SpicetJetSpecial" },
-//   { id: 8, name: "GoIndigoSpecial" },
-//   { id: 9, name: "GoAirSpecial" },
-//   { id: 10, name: "ITSpecial" },
-//   { id: 11, name: "Arzoo" },
-//   { id: 12, name: "PaytronicIndia" },
-//   { id: 13, name: "InstaPay" },
-//   { id: 14, name: "RedBus" },
-//   { id: 15, name: "Rechargemy" },
-//   { id: 16, name: "MarsAPI" },
-//   { id: 17, name: "EMT" },
-//   { id: 18, name: "TBO" },
-//   { id: 19, name: "GoAllTrip" },
-//   { id: 20, name: "FixedDeparture" },
-//   { id: 21, name: "IRCTC" },
-//   { id: 22, name: "MoneyTransfer" },
-//   { id: 23, name: "AzmyaRecharge" },
-//   { id: 24, name: "MultiLink" },
-//   { id: 25, name: "JustClick" },
-//   { id: 26, name: "OtherFlightSupplier" },
-//   { id: 27, name: "AccountVarification" },
-//   { id: 28, name: "UAPI" },
-//   { id: 29, name: "GMT" },
-//   { id: 30, name: "GMT_LccInter" },
-//   { id: 31, name: "GMT_GDS_Inter" },
-//   { id: 32, name: "Default" },
-//   { id: 33, name: "TripJack" },
-//   { id: 34, name: "AirIndia_UAPI" },
-//   { id: 35, name: "Vistara_UAPI" },
-//   { id: 36, name: "Indigo_UAPI" },
-//   { id: 37, name: "AirAsia" },
-//   { id: 38, name: "XMLHUB" },
-//   { id: 39, name: "NDC" },
-//   { id: 40, name: "FlyBig" },
-//   { id: 41, name: "AkasaAir" },
-//   { id: 42, name: "AlliceAir" },
-//   { id: 43, name: "Fly24API" }
-// ];
-
-//   return (
-//     <div>
-//       <Sidebar />
-
-//       <div style={styles.page}>
-//         <div style={styles.container}>
-//           <h2 style={styles.heading}>Markup</h2>
-//           <hr />
-
-//           <div style={styles.box}>
-//             <div style={styles.field}>
-//               <label style={styles.label}>Process Type*</label>
-//               <select style={styles.input}>
-//                 <option>B2B</option>
-//                 <option>B2C</option>
-//               </select>
-//             </div>
-
-//             <div style={styles.field}>
-//               <label style={styles.label}>Service Type*</label>
-//               <select style={styles.input}>
-//                 <option>Flight</option>
-//                 <option>Hotel</option>
-//                 <option>Bus</option>
-//               </select>
-//             </div>
-
-            
-
-//      <div style={styles.field}>
-//   <label style={styles.label}>Engine Type*</label>
-//   <select style={styles.input}>
-//     <option value="">Select Engine Type</option>
-
-//     {engineTypes.map((item) => (
-//       <option key={item.id} value={item.id}>
-//         {item.name}
-//       </option>
-//     ))}
-//   </select>
-// </div>
-
-//             <div style={styles.field}>
-//               <label style={styles.label}>Enter Airline Code</label>
-//               <input
-//                 type="text"
-//                 placeholder="SG,6E"
-//                 style={styles.input}
-//               />
-//             </div>
-
-//             <div style={styles.row}>
-//               <div style={styles.smallField}>
-//                 <label style={styles.label}>IsDomestic*</label>
-//                 <select style={styles.input}>
-//                   <option>Domestic</option>
-//                   <option>International</option>
-//                 </select>
-//               </div>
-
-//               <div style={styles.smallField}>
-//                 <label style={styles.label}>Status*</label>
-//                 <select style={styles.input}>
-//                   <option>Percentage</option>
-//                   <option>Fixed</option>
-//                 </select>
-//               </div>
-
-//               <div style={styles.smallField}>
-//                 <label style={styles.label}>Value*</label>
-//                 <input
-//                   type="number"
-//                   placeholder="Value"
-//                   value={value}
-//                   onChange={(e) => setValue(e.target.value)}
-//                   style={styles.input}
-//                 />
-//               </div>
-//             </div>
-
-//             <div style={{ display: "flex", justifyContent: "center" }}>
-//               <button style={styles.btn}>Submit</button>
-//             </div>
-
-//           </div>
-//         </div>
-//       </div>
-
-//       <Footer2 />
-//     </div>
-//   );
-// };
-
-// const styles = {
-//   page: {
-//     display: "flex",
-//     justifyContent: "center",
-//     padding: "30px",
-//   },
-//   container: {
-//     width: "100%",
-//     maxWidth: "1000px",
-//   },
-//   heading: {
-//     fontSize: "36px",
-//     textAlign: "center",
-//     marginBottom: "20px",
-//   },
-//   box: {
-//     marginTop: "20px",
-//     background: "#fff",
-//     padding: "40px",
-//     borderRadius: "10px",
-//     boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-//   },
-//   field: {
-//     display: "flex",
-//     flexDirection: "column",
-//     marginBottom: "20px",
-//   },
-//   label: {
-//     fontSize: "14px",
-//     fontWeight: "600",
-//     marginBottom: "8px",
-//   },
-//   input: {
-//     width: "100%",
-//     padding: "12px",
-//     border: "1px solid #ccc",
-//     borderRadius: "5px",
-//     fontSize: "14px",
-//   },
-//   row: {
-//     display: "flex",
-//     gap: "20px",
-//     marginTop: "10px",
-//     flexWrap: "wrap",
-//   },
-//   smallField: {
-//     flex: 1,
-//     minWidth: "220px",
-//     display: "flex",
-//     flexDirection: "column",
-//   },
-//   btn: {
-//     marginTop: "25px",
-//     background: "#0d6efd",
-//     color: "#fff",
-//     border: "none",
-//     padding: "12px 35px",
-//     borderRadius: "5px",
-//     cursor: "pointer",
-//     fontSize: "15px",
-//     fontWeight: "600",
-//     width: "200px",
-//   },
-// };
-
-// export default Markups;
-
-
-// import React, { useState, useEffect } from "react";
-// import Sidebar from "./Sidebar";
-// import Footer2 from "./Footer2";
-
-// const Markups = () => {
-//   const [value, setValue] = useState("");
-//   const [apiResponse, setApiResponse] = useState(null);
-  
-  
-//   useEffect(() => {
-//     fetchMarkupData();
-//   }, []);
-
-//   const fetchMarkupData = async () => {
-//     try {
-//       const response = await fetch(
-//         "https://api.namantechnolab.com/api/Admin/AdminOperation",
-//         {
-//           method: "POST",
-//           headers: {
-//             "Content-Type": "application/json",
-//           },
-//           body: JSON.stringify({
-//             FromDate: null,
-//             ToDate: null,
-//             MarkupRq: null,
-//             APIRequestType: 0,
-//             AgencyKey: "02AD68F3-9AE6-4148-85B1-E61D1F03991F",
-//             AccountNo: 11,
-//           }),
-//         }
-//       );
-
-//       const result = await response.json();
-
-//       console.log("API Response:", result);
-//       setApiResponse(result);
-//     } catch (error) {
-//       console.error("API Error:", error);
-//     }
-//   };
-//   const engineTypes = [
-//   { id: 1, name: "Amadeus" },
-//   { id: 2, name: "Galileo" },
-//   { id: 3, name: "SpiceJet" },
-//   { id: 4, name: "GoIndigo" },
-//   { id: 5, name: "GoAir" },
-//   { id: 6, name: "GoAirAPI" },
-//   { id: 7, name: "SpicetJetSpecial" },
-//   { id: 8, name: "GoIndigoSpecial" },
-//   { id: 9, name: "GoAirSpecial" },
-//   { id: 10, name: "ITSpecial" },
-//   { id: 11, name: "Arzoo" },
-//   { id: 12, name: "PaytronicIndia" },
-//   { id: 13, name: "InstaPay" },
-//   { id: 14, name: "RedBus" },
-//   { id: 15, name: "Rechargemy" },
-//   { id: 16, name: "MarsAPI" },
-//   { id: 17, name: "EMT" },
-//   { id: 18, name: "TBO" },
-//   { id: 19, name: "GoAllTrip" },
-//   { id: 20, name: "FixedDeparture" },
-//   { id: 21, name: "IRCTC" },
-//   { id: 22, name: "MoneyTransfer" },
-//   { id: 23, name: "AzmyaRecharge" },
-//   { id: 24, name: "MultiLink" },
-//   { id: 25, name: "JustClick" },
-//   { id: 26, name: "OtherFlightSupplier" },
-//   { id: 27, name: "AccountVarification" },
-//   { id: 28, name: "UAPI" },
-//   { id: 29, name: "GMT" },
-//   { id: 30, name: "GMT_LccInter" },
-//   { id: 31, name: "GMT_GDS_Inter" },
-//   { id: 32, name: "Default" },
-//   { id: 33, name: "TripJack" },
-//   { id: 34, name: "AirIndia_UAPI" },
-//   { id: 35, name: "Vistara_UAPI" },
-//   { id: 36, name: "Indigo_UAPI" },
-//   { id: 37, name: "AirAsia" },
-//   { id: 38, name: "XMLHUB" },
-//   { id: 39, name: "NDC" },
-//   { id: 40, name: "FlyBig" },
-//   { id: 41, name: "AkasaAir" },
-//   { id: 42, name: "AlliceAir" },
-//   { id: 43, name: "Fly24API" }
-// ];
-//   // ... (engineTypes array and fetchMarkupData remains same as your code)
-
-//   return (
-//     <div>
-//       <Sidebar />
-//       <div className="container mt-4">
-//         <div className="bg-white border p-4 shadow-sm">
-//           <h4>Markup</h4>
-//           <hr />
-
-//           <div className="row mb-3">
-//             <div className="col-md-3">
-//               <label className="fw-bold">Process Type<span className="text-danger">*</span></label>
-//               <select className="form-control">
-//                 <option>--Select--</option>
-//                 <option value="0">B2C</option>
-//                 <option value="1">B2B</option>
-//               </select>
-//             </div>
-//             <div className="col-md-3">
-//               <label className="fw-bold">Service Type<span className="text-danger">*</span></label>
-//               <select className="form-control">
-//                 <option>--Select--</option>
-//                 <option value="1">Flight</option>
-//                 <option value="5">Bus</option>
-//                 <option value="2">Hotel</option>
-//               </select>
-//             </div>
-//             <div className="col-md-3">
-//               <label className="fw-bold">Engine Type<span className="text-danger">*</span></label>
-//               <select className="form-control">
-//                 <option value="">--Select--</option>
-//                 {engineTypes.map((item) => (
-//                   <option key={item.id} value={item.id}>{item.name}</option>
-//                 ))}
-//               </select>
-//             </div>
-//           </div>
-
-//           <div className="row mb-3">
-//             <div className="col-md-4">
-//               <label className="fw-bold">Enter Code</label>
-//               <input type="text" className="form-control" placeholder="Enter Code" />
-//             </div>
-//             <div className="col-md-4">
-//               <label className="fw-bold">Status</label>
-//               <select className="form-control">
-//                 <option value="">--Select Status--</option>
-//                 <option value="1">Active</option>
-//                 <option value="0">Inactive</option>
-//               </select>
-//             </div>
-//           </div>
-
-//           <div className="row mb-3">
-//             <div className="col-md-3">
-//               <label className="fw-bold">IsDomestic<span className="text-danger">*</span></label>
-//               <select className="form-control">
-//                 <option value="true">Domestic</option>
-//                 <option value="false">International</option>
-//               </select>
-//             </div>
-//             <div className="col-md-3">
-//               <label className="fw-bold">Status Type<span className="text-danger">*</span></label>
-//               <select className="form-control">
-//                 <option>--Select--</option>
-//                 <option value="0">Fixed</option>
-//                 <option value="1">Percentage</option>
-//               </select>
-//             </div>
-//             <div className="col-md-3">
-//               <label className="fw-bold">Value<span className="text-danger">*</span></label>
-//               <input type="number" className="form-control" placeholder="Value" onChange={(e) => setValue(e.target.value)} />
-//             </div>
-//           </div>
-
-//           <button type="button" className="btn btn-primary px-4">
-//             Submit
-//           </button>
-
-//           <hr className="my-4" />
-
-//           {/* Table Section */}
-//           <div className="table-responsive">
-//             <table className="table table-bordered table-striped">
-//               <thead className="table-light">
-//                 <tr>
-//                   <th>Process Type</th>
-//                   <th>Service Type</th>
-//                   <th>Engine Type</th>
-//                   <th>Is Domestic</th>
-//                   <th>Markup Value</th>
-//                   <th>Markup Type</th>
-//                   <th>Delete</th>
-//                 </tr>
-//               </thead>
-//               <tbody>
-//                 <tr>
-//                   <td>B2C</td>
-//                   <td>Flight</td>
-//                   <td>Test Engine</td>
-//                   <td>Domestic</td>
-//                   <td>{value || "5"}</td>
-//                   <td>Percentage</td>
-//                   <td>
-//                     <button className="btn btn-danger btn-sm">Delete</button>
-//                   </td>
-//                 </tr>
-//               </tbody>
-//             </table>
-//           </div>
-//         </div>
-//       </div>
-//       <Footer2 />
-//     </div>
-//   );
-// };
-
-// export default Markups;
-
-
-
-// import React, { useState, useEffect } from "react";
-// import Sidebar from "./Sidebar";
-// import Footer2 from "./Footer2";
-
-// const Markups = () => {
-//   const [markupList, setMarkupList] = useState([]); // Table ke liye data
-//   const [formData, setFormData] = useState({
-//     processType: "1", // 1 for B2B, 0 for B2C
-//     serviceType: "1",
-//     engineType: "",
-//     airlineCode: "",
-//     isDomestic: "true",
-//     statusType: "0", // 0 for Fixed, 1 for Percentage
-//     value: ""
-//   });
-
-//   // Input change handler
-//   const handleChange = (e) => {
-//     setFormData({ ...formData, [e.target.name]: e.target.value });
-//   };
-// // Submit Handler
-//   const handleSubmit = async () => {
-//     // .env variables se values fetch karna
-//     const API_URL = process.env.REACT_APP_API_BASE_URL;
-//     const ADMIN_KEY = process.env.REACT_APP_ADMIN_KEY;
-//     const AGENCY_CODE = process.env.REACT_APP_AGENCY_CODE;
-
-//     const payload = {
-//       FromDate: null,
-//       ToDate: null,
-//       MarkupRq: {
-//         BookingType: parseInt(formData.serviceType),
-//         MarkupValue: parseFloat(formData.value),
-//         CalType: parseInt(formData.statusType),
-//         AdminId: null,
-//         AdminKey: ADMIN_KEY, // .env se
-//         IsB2B: formData.processType === "1",
-//         ProcessType: parseInt(formData.processType),
-//         EngineType: parseInt(formData.engineType),
-//         IsDomestic: formData.isDomestic === "true",
-//         AccountNo: 11,
-//         AgencyCode: AGENCY_CODE, // .env se
-//         Status: "1",
-//         Code: formData.airlineCode
-//       },
-//       APIRequestType: 17,
-//       AgencyKey: null,
-//       AccountNo: 0
-//     };
-
-//     try {
-//       const response = await fetch(API_URL, { // .env se API URL
-//         method: "POST",
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify(payload),
-//       });
-//       const result = await response.json();
-      
-//       if (result) {
-//         // API success hone par local state update karein
-//         setMarkupList([...markupList, { ...formData, id: Date.now() }]);
-//         alert("Markup Added Successfully!");
-//       }
-//     } catch (error) {
-//       console.error("API Error:", error);
-//       alert("Error adding markup!");
-//     }
-//   };
-
-//   const deleteMarkup = (id) => {
-//     setMarkupList(markupList.filter((item) => item.id !== id));
-//   };
-
-//   return (
-//     <div>
-//       <Sidebar />
-//       <div style={styles.page}>
-//         <div style={styles.container}>
-//           <h2 style={styles.heading}>Markup </h2>
-          
-//           <div style={styles.box}>
-//             <div style={styles.row}>
-//               <div style={styles.smallField}>
-//                 <label>Process Type</label>
-//                 <select name="processType" style={styles.input} onChange={handleChange}>
-//                   <option value="1">B2B</option>
-//                   <option value="0">B2C</option>
-//                 </select>
-//               </div>
-//               <div style={styles.smallField}>
-//                 <label>Service Type</label>
-//                 <select name="serviceType" style={styles.input} onChange={handleChange}>
-//                   <option value="1">Flight</option>
-//                   <option value="2">Hotel</option>
-//                   <option value="5">Bus</option>
-//                 </select>
-//               </div>
-//               <div style={styles.smallField}>
-//                 <label>Engine Type</label>
-//                 <select name="engineType" style={styles.input} onChange={handleChange}>
-//                   <option value="">Select Engine</option>
-//                   <option value="13">InstaPay</option>
-//                   <option value="33">TripJack</option>
-//                 </select>
-//               </div>
-//             </div>
-
-//             <div style={{...styles.row, marginTop: "20px"}}>
-//               <div style={styles.smallField}>
-//                 <label>Airline Code</label>
-//                 <input name="airlineCode" type="text" style={styles.input} onChange={handleChange} />
-//               </div>
-//               <div style={styles.smallField}>
-//                 <label>Value</label>
-//                 <input name="value" type="number" style={styles.input} onChange={handleChange} />
-//               </div>
-//             </div>
-
-//             <button style={styles.btn} onClick={handleSubmit}>Submit</button>
-//           </div>
-
-//           {/* Table Section */}
-//           <div style={styles.box}>
-//             <table style={{width: "100%", textAlign: "left"}}>
-//               <thead>
-//                 <tr>
-//                   <th>Process</th><th>Service</th><th>Value</th><th>Action</th>
-//                 </tr>
-//               </thead>
-//               <tbody>
-//                 {markupList.map((item) => (
-//                   <tr key={item.id}>
-//                     <td>{item.processType === "1" ? "B2B" : "B2C"}</td>
-//                     <td>{item.serviceType}</td>
-//                     <td>{item.value}</td>
-//                     <td><button onClick={() => deleteMarkup(item.id)} style={{color: 'red'}}>Delete</button></td>
-//                   </tr>
-//                 ))}
-//               </tbody>
-//             </table>
-//           </div>
-//         </div>
-//       </div>
-//       <Footer2 />
-//     </div>
-//   );
-// };
-
-// // Styles yahan purane wale use kar sakte hain
-// const styles = {  page: {
-//     display: "flex",
-//     justifyContent: "center",
-//     padding: "30px",
-//   },
-//   container: {
-//     width: "100%",
-//     maxWidth: "1000px",
-//   },
-//   heading: {
-//     fontSize: "36px",
-//     textAlign: "center",
-//     marginBottom: "20px",
-//   },
-//   box: {
-//     marginTop: "20px",
-//     background: "#fff",
-//     padding: "40px",
-//     borderRadius: "10px",
-//     boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-//   },
-//   field: {
-//     display: "flex",
-//     flexDirection: "column",
-//     marginBottom: "20px",
-//   },
-//   label: {
-//     fontSize: "14px",
-//     fontWeight: "600",
-//     marginBottom: "8px",
-//   },
-//   input: {
-//     width: "100%",
-//     padding: "12px",
-//     border: "1px solid #ccc",
-//     borderRadius: "5px",
-//     fontSize: "14px",
-//   },
-//   row: {
-//     display: "flex",
-//     gap: "20px",
-//     marginTop: "10px",
-//     flexWrap: "wrap",
-//   },
-//   smallField: {
-//     flex: 1,
-//     minWidth: "220px",
-//     display: "flex",
-//     flexDirection: "column",
-//   },
-//   btn: {
-//     marginTop: "25px",
-//     background: "#0d6efd",
-//     color: "#fff",
-//     border: "none",
-//     padding: "12px 35px",
-//     borderRadius: "5px",
-//     cursor: "pointer",
-//     fontSize: "15px",
-//     fontWeight: "600",
-//     width: "200px",
-//   }, };
-// export default Markups;
-
-
-// import React, { useState, useEffect } from "react";
-// import Sidebar from "./Sidebar";
-// import Footer2 from "./Footer2";
-
-// const Markups = () => {
-//   const [markupList, setMarkupList] = useState([]); // Table ke liye data
-//   const [formData, setFormData] = useState({
-//     processType: "1", // 1 for B2B, 0 for B2C
-//     serviceType: "1",
-//     engineType: "",
-//     airlineCode: "",
-//     isDomestic: "true",
-//     statusType: "0", // 0 for Fixed, 1 for Percentage
-//     value: ""
-//   });
-
-//   // Input change handler
-//   const handleChange = (e) => {
-//     setFormData({ ...formData, [e.target.name]: e.target.value });
-//   };
-// // Submit Handler
-//   const handleSubmit = async () => {
-//     // .env variables se values fetch karna
-//     const API_URL = process.env.REACT_APP_API_BASE_URL;
-//     const ADMIN_KEY = process.env.REACT_APP_ADMIN_KEY;
-//     const AGENCY_CODE = process.env.REACT_APP_AGENCY_CODE;
-
-//     const payload = {
-//       FromDate: null,
-//       ToDate: null,
-//       MarkupRq: {
-//         BookingType: parseInt(formData.serviceType),
-//         MarkupValue: parseFloat(formData.value),
-//         CalType: parseInt(formData.statusType),
-//         AdminId: null,
-//         AdminKey: ADMIN_KEY, // .env se
-//         IsB2B: formData.processType === "1",
-//         ProcessType: parseInt(formData.processType),
-//         EngineType: parseInt(formData.engineType),
-//         IsDomestic: formData.isDomestic === "true",
-//         AccountNo: 11,
-//         AgencyCode: AGENCY_CODE, // .env se
-//         Status: "1",
-//         Code: formData.airlineCode
-//       },
-//       APIRequestType: 17,
-//       AgencyKey: null,
-//       AccountNo: 0
-//     };
-
-//     try {
-//       const response = await fetch(API_URL, { // .env se API URL
-//         method: "POST",
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify(payload),
-//       });
-//       const result = await response.json();
-//       
-//       if (result) {
-//         // API success hone par local state update karein
-//         setMarkupList([...markupList, { ...formData, id: Date.now() }]);
-//         alert("Markup Added Successfully!");
-//       }
-//     } catch (error) {
-//       console.error("API Error:", error);
-//       alert("Error adding markup!");
-//     }
-//   };
-
-//   const deleteMarkup = (id) => {
-//     setMarkupList(markupList.filter((item) => item.id !== id));
-//   };
-
-//   return (
-//     <div>
-//       <Sidebar />
-//       <div style={styles.page}>
-//         <div style={styles.container}>
-//           <h2 style={styles.heading}>Markup </h2>
-//           
-//           <div style={styles.box}>
-//             <div style={styles.row}>
-//               <div style={styles.smallField}>
-//                 <label>Process Type</label>
-//                 <select name="processType" style={styles.input} onChange={handleChange}>
-//                   <option value="1">B2B</option>
-//                   <option value="0">B2C</option>
-//                 </select>
-//               </div>
-//               <div style={styles.smallField}>
-//                 <label>Service Type</label>
-//                 <select name="serviceType" style={styles.input} onChange={handleChange}>
-//                   <option value="1">Flight</option>
-//                   <option value="2">Hotel</option>
-//                   <option value="5">Bus</option>
-//                 </select>
-//               </div>
-//               <div style={styles.smallField}>
-//                 <label>Engine Type</label>
-//                 <select name="engineType" style={styles.input} onChange={handleChange}>
-//                   <option value="">Select Engine</option>
-//                   <option value="13">InstaPay</option>
-//                   <option value="33">TripJack</option>
-//                 </select>
-//               </div>
-//             </div>
-
-//             <div style={{...styles.row, marginTop: "20px"}}>
-//               <div style={styles.smallField}>
-//                 <label>Airline Code</label>
-//                 <input name="airlineCode" type="text" style={styles.input} onChange={handleChange} />
-//               </div>
-//               <div style={styles.smallField}>
-//                 <label>Value</label>
-//                 <input name="value" type="number" style={styles.input} onChange={handleChange} />
-//               </div>
-//             </div>
-
-//             <button style={styles.btn} onClick={handleSubmit}>Submit</button>
-//           </div>
-
-//           {/* Table Section */}
-//           <div style={styles.box}>
-//             <table style={{width: "100%", textAlign: "left"}}>
-//               <thead>
-//                 <tr>
-//                   <th>Process</th><th>Service</th><th>Value</th><th>Action</th>
-//                 </tr>
-//               </thead>
-//               <tbody>
-//                 {markupList.map((item) => (
-//                   <tr key={item.id}>
-//                     <td>{item.processType === "1" ? "B2B" : "B2C"}</td>
-//                     <td>{item.serviceType}</td>
-//                     <td>{item.value}</td>
-//                     <td><button onClick={() => deleteMarkup(item.id)} style={{color: 'red'}}>Delete</button></td>
-//                   </tr>
-//                 ))}
-//               </tbody>
-//             </table>
-//           </div>
-//         </div>
-//       </div>
-//       <Footer2 />
-//     </div>
-//   );
-// };
-
-// // Styles yahan purane wale use kar sakte hain
-// const styles = {  page: {
-//     display: "flex",
-//     justifyContent: "center",
-//     padding: "30px",
-//   },
-//   container: {
-//     width: "100%",
-//     maxWidth: "1000px",
-//   },
-//   heading: {
-//     fontSize: "36px",
-//     textAlign: "center",
-//     marginBottom: "20px",
-//   },
-//   box: {
-//     marginTop: "20px",
-//     background: "#fff",
-//     padding: "40px",
-//     borderRadius: "10px",
-//     boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-//   },
-//   field: {
-//     display: "flex",
-//     flexDirection: "column",
-//     marginBottom: "20px",
-//   },
-//   label: {
-//     fontSize: "14px",
-//     fontWeight: "600",
-//     marginBottom: "8px",
-//   },
-//   input: {
-//     width: "100%",
-//     padding: "12px",
-//     border: "1px solid #ccc",
-//     borderRadius: "5px",
-//     fontSize: "14px",
-//   },
-//   row: {
-//     display: "flex",
-//     gap: "20px",
-//     marginTop: "10px",
-//     flexWrap: "wrap",
-//   },
-//   smallField: {
-//     flex: 1,
-//     minWidth: "220px",
-//     display: "flex",
-//     flexDirection: "column",
-//   },
-//   btn: {
-//     marginTop: "25px",
-//     background: "#0d6efd",
-//     color: "#fff",
-//     border: "none",
-//     padding: "12px 35px",
-//     borderRadius: "5px",
-//     cursor: "pointer",
-//     fontSize: "15px",
-//     fontWeight: "600",
-//     width: "200px",
-//   }, };
-// export default Markups;import React, { useMemo, useState } from "react";
-
 import React, { Component, useCallback, useEffect, useMemo, useState } from "react";
 import Sidebar from "./Sidebar";
 import Footer2 from "./Footer2";
@@ -891,6 +9,10 @@ const ADMIN_KEY = process.env.REACT_APP_ADMIN_KEY;
 const AGENCY_CODE = process.env.REACT_APP_AGENCY_CODE;
 
 const DELETE_API_URL = process.env.REACT_APP_API_DELETE_URL;
+
+// 👉 Agent list endpoint (PortalAgency) — already in .env as REACT_APP_API_3
+const AGENT_LIST_API_URL = process.env.REACT_APP_API_3;
+const PORTAL_ID = process.env.REACT_APP_PORTAL_ID;
 
 // -----------------------------------------------------------------------------
 
@@ -915,6 +37,7 @@ const INITIAL_FORM = {
   isDomestic: "true",
   statusType: "0",
   value: "",
+  agentCode: "", // 👈 selected agent when Process Type = B2B
 };
 
 function engineName(id) {
@@ -1035,7 +158,8 @@ async function createMarkup(formData, opts = {}) {
       ProcessType: parseInt(formData.processType, 10),
       EngineType: parseInt(formData.engineType, 10),
       IsDomestic: formData.isDomestic === "true",
-      AgencyCode: AGENCY_CODE,
+      // 👇 B2B ho toh selected agent ka code jayega, warna default AGENCY_CODE
+      AgencyCode: formData.processType === "1" && formData.agentCode ? formData.agentCode : AGENCY_CODE,
       Status: "1",
       Code: formData.airlineCode.trim().toUpperCase(),
     },
@@ -1052,6 +176,42 @@ async function deleteMarkupApi(item, opts = {}) {
     },
   };
   return postWithRetry(payload, { ...opts, url: DELETE_API_URL }); // 👈 uses the separate delete URL
+}
+
+// 👉 Agent list fetch — TODO: confirm exact PortalAgency request/response shape with backend,
+// abhi ke liye common shape guess kiya hai (AdminKey + PortalId → array of agencies)
+async function fetchAgentList() {
+  if (!AGENT_LIST_API_URL) {
+    throw new ApiError("Agent list API URL is not set (REACT_APP_API_3).", 0, null);
+  }
+
+  const response = await fetch(AGENT_LIST_API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      AdminKey: ADMIN_KEY,
+      PortalId: Number(PORTAL_ID),
+    }),
+  });
+
+  const data = await response.json();
+  console.log("[Markups] Agent list response ←", data);
+
+  // Try a few common response key shapes
+  const list =
+    data?.AgencyList ||
+    data?.PortalAgencyList ||
+    data?.Agents ||
+    data?.Data ||
+    (Array.isArray(data) ? data : []);
+
+  if (!Array.isArray(list)) {
+    throw new ApiError("Unexpected agent list response shape. Check console.", 0, data);
+  }
+
+  console.log("[Markups] Agent list PARSED ARRAY →", list, "length:", list.length); // 🔍 DEBUG
+
+  return list;
 }
 
 // -----------------------------------------------------------------------------
@@ -1082,6 +242,10 @@ function validate(formData) {
     } else if (formData.statusType === "1" && num > 100) {
       errors.value = "Percentage cannot exceed 100.";
     }
+  }
+
+  if (formData.processType === "1" && !formData.agentCode) {
+    errors.agentCode = "Please select an agent.";
   }
 
   return errors;
@@ -1162,9 +326,54 @@ const MarkupsInner = () => {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
 
+  // 👉 Agent list state (shown only when Process Type = B2B)
+  const [agentList, setAgentList] = useState([]);
+  const [agentsLoading, setAgentsLoading] = useState(false);
+  const [agentsError, setAgentsError] = useState("");
+
   useEffect(() => {
     saveLocalMarkups(markupList);
   }, [markupList]);
+
+  // 👉 Fetch agent list when B2B is selected
+  useEffect(() => {
+    if (formData.processType !== "1") return;
+    if (agentList.length > 0) return; // already loaded, don't refetch every render
+
+    let cancelled = false;
+    setAgentsLoading(true);
+    setAgentsError("");
+
+    fetchAgentList()
+      .then((list) => {
+        if (!cancelled) setAgentList(list);
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          console.error("[Markups] Agent list fetch failed:", err);
+          setAgentsError(
+            err instanceof ApiError ? err.message : "Could not load agent list."
+          );
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setAgentsLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData.processType]);
+
+  // 🔍 DEBUG - render ke time pe state ka snapshot, isse pata chalega ki UI ke paas
+  // kitne agents hain aur loading/error kya status hai
+  console.log(
+    "[Markups] RENDER → processType:", formData.processType,
+    "| agentList.length:", agentList.length,
+    "| agentsLoading:", agentsLoading,
+    "| agentsError:", agentsError
+  );
 
   const handleChange = useCallback((e) => {
     const { name, value } = e.target;
@@ -1187,9 +396,23 @@ const MarkupsInner = () => {
       const result = await createMarkup(formData);
       console.log("[Markups] Add markup succeeded:", result);
       setSubmitSuccess("Markup added successfully.");
+
+      // Resolve agent name (for display) from the currently loaded agent list
+      const selectedAgent = agentList.find(
+        (a) => (a.AgencyCode || a.Code || a.code) === formData.agentCode
+      );
+      const agentName =
+        formData.processType === "1"
+          ? selectedAgent?.AgencyName || selectedAgent?.Name || selectedAgent?.name || formData.agentCode
+          : "";
+
       setMarkupList((prev) => [
         ...prev,
-        { ...formData, id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}` },
+        {
+          ...formData,
+          agentName,
+          id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        },
       ]);
       setFormData(INITIAL_FORM);
     } catch (err) {
@@ -1272,6 +495,37 @@ const MarkupsInner = () => {
                   <option value="0">B2C</option>
                 </select>
               </div>
+
+              {/* 👉 B2B select hote hi Agent list dropdown yahan aayega */}
+              {formData.processType === "1" && (
+                <div style={styles.field}>
+                  <label style={styles.label} htmlFor="agentCode">Agent*</label>
+                  <select
+                    id="agentCode"
+                    name="agentCode"
+                    style={{ ...styles.select, ...(fieldErrors.agentCode ? styles.inputError : {}) }}
+                    value={formData.agentCode}
+                    onChange={handleChange}
+                    disabled={agentsLoading}
+                    aria-invalid={Boolean(fieldErrors.agentCode)}
+                  >
+                    <option value="">
+                      {agentsLoading ? "Loading agents…" : "Select Agent"}
+                    </option>
+                    {agentList.map((agent) => {
+                      const code = agent.AgencyCode || agent.Code || agent.code;
+                      const name = agent.AgencyName || agent.Name || agent.name || code;
+                      return (
+                        <option key={code} value={code}>
+                          {name} {code ? `(${code})` : ""}
+                        </option>
+                      );
+                    })}
+                  </select>
+                  {fieldErrors.agentCode && <span style={styles.errorText}>{fieldErrors.agentCode}</span>}
+                  {agentsError && <span style={styles.errorText}>{agentsError}</span>}
+                </div>
+              )}
 
               <div style={styles.field}>
                 <label style={styles.label} htmlFor="serviceType">Service Type*</label>
@@ -1389,6 +643,7 @@ const MarkupsInner = () => {
                     <thead style={styles.thead}>
                       <tr>
                         <th style={styles.th}>Process Type</th>
+                        <th style={styles.th}>Agent</th>
                         <th style={styles.th}>Service Type</th>
                         <th style={styles.th}>Is Domestic</th>
                         <th style={styles.th}>Markup Value</th>
@@ -1402,6 +657,7 @@ const MarkupsInner = () => {
                       {pagedList.map((item) => (
                         <tr key={item.id} style={styles.tr}>
                           <td style={styles.td}>{item.processType === "1" ? "B2B" : "B2C"}</td>
+                          <td style={styles.td}>{item.processType === "1" ? (item.agentName || "-") : "-"}</td>
                           <td style={styles.td}>{item.serviceType === "1" ? "Flight" : "Hotel"}</td>
                           <td style={styles.td}>{item.isDomestic === "true" || item.isDomestic === true ? "Domestic" : "International"}</td>
                           <td style={styles.td}>{item.value}</td>

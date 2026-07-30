@@ -16,6 +16,9 @@ import UpdateAgency from "./UpdateAgency";
 import Invoice from "./Invoice";
 import Flightcancel from "./Flightcancel";
 import EditBooking from "./Editpagedit";
+import Editdeposit from "./Editdeposit"; // path apne folder structure ke hisaab se adjust karo
+
+// ...Routes ke andar
 
 
 
@@ -46,6 +49,10 @@ function App() {
         <Route path="/viewticket" element={<Viewticket />} />
         <Route path="/markups" element={<Markups />} />
         <Route path="/Editpagedit/:id" element={<EditBooking />} />
+        <Route path="/Flightcancel" element={<Flightcancel />} />
+           <Route path="/edit-deposit" element={<Editdeposit />} />
+
+        
         
 
 
@@ -60,7 +67,9 @@ function App() {
         {/* Invoice */}
         <Route path="/invoice/:txnId" element={<Invoice />} />
           {/* Ticket */}
-        <Route path="/ticket/:id" element={<Ticketsss />} />
+        <Route path="/Ticketsss/:id" element={<Ticketsss />} />
+
+
 
 
         

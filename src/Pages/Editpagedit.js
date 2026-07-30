@@ -11,7 +11,7 @@ const AGENCY_KEY = process.env.REACT_APP_AGENCY_KEY;
 const PORTAL_ID = process.env.REACT_APP_PORTAL_ID;
 // AdminKey aur AgencyKey same value hai example mein, agar alag ho to naya env bana lena
 const ADMIN_KEY = process.env.REACT_APP_ADMIN_KEY || AGENCY_KEY;
-const ACCOUNT_NO = process.env.REACT_APP_ACCOUNT_NO || "11";
+const ACCOUNT_NO = 17;
 
 const bookingStatusMap = {
   0: "Default",
@@ -109,7 +109,7 @@ export default function TicketDetails() {
       const data = await res.json();
 
       if (data.ResponseStatus !== 1) {
-        throw new Error(data?.Error?.ErrorDesc || "Booking details nahi mil paayi");
+        throw new Error(data?.Error?.ErrorDesc || "Unable to retrieve booking details.");
       }
 
       setRaw(data);
@@ -138,7 +138,7 @@ export default function TicketDetails() {
       );
     } catch (err) {
       console.error(err);
-      setError(err.message || "Booking details fetch karne mein problem aayi. Please retry karein.");
+      setError(err.message || ".");
     } finally {
       setLoading(false);
     }
@@ -166,14 +166,13 @@ export default function TicketDetails() {
 
     if (!isFormComplete) {
       setUpdateOk(false);
-      setUpdateMsg("Please PNR aur sabhi passengers ka Ticket No. fill karein, tabhi update hoga.");
+      setUpdateMsg(".");
       return;
     }
 
     if (!UPDATE_API_URL) {
       setUpdateOk(false);
       setUpdateMsg(
-        "REACT_APP_UPDATE_API_URL .env file mein set nahi hai. Please .env check karein aur app restart karein."
       );
       return;
     }

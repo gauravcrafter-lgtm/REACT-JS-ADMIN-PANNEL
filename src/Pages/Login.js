@@ -40,7 +40,7 @@ function Login() {
     e.preventDefault();
     setError("");
     setLoading(true);
-
+debugger;
     try {
       const payload = {
         AgencyKey: AGENCY_KEY,
@@ -48,9 +48,8 @@ function Login() {
         Password: password,
         PortalId: Number(PORTAL_ID),
         AccountNo: 0,
-        IsB2C: false,
+        IsB2C: true,
         IsTC: true,
-        AgencyType: 2, // 👉 Fixed as Agent (use 1 if Distributor)
       };
 
       const response = await fetch(LOGIN_API, {
@@ -58,12 +57,11 @@ function Login() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-
+debugger;
       const data = await response.json();
 
       if (response.ok && data.ResponseStatus === 1) {
         const expiry = new Date().getTime() + 3 * 24 * 60 * 60 * 1000;
-
         localStorage.setItem("isLoggedIn", "true");
         localStorage.setItem("token", data.APIToken || "");
         localStorage.setItem("email", data.User?.Email || email);
@@ -161,9 +159,11 @@ function Login() {
       </div>
 
       <Loginsec />
+      
       <Footer />
     </div>
   );
 }
 
 export default Login;
+

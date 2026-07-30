@@ -30,7 +30,7 @@ export default function EditAgency() {
             APIToken: null,
             AgencyKey: agencyKey,
             IsB2B: true,
-            PortalId: 11,
+            PortalId: 17,
             IsTC: false
           }),
         });

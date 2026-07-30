@@ -1,3 +1,4 @@
+
 // import React, { useEffect, useState, useCallback } from "react";
 // import Sidebar from "./Sidebar";
 // import "../CSS/Flight.css";
@@ -32,6 +33,36 @@
 //   const ADMIN_KEY = process.env.REACT_APP_ADMIN_KEY;
 //   const PORTAL_ID = process.env.REACT_APP_PORTAL_ID;
 
+//   // 🔍 Response ke andar jo bhi array field ho usko dhoondh ke nikal deta hai,
+//   // chahe backend kisi bhi naam se bheje (AgencyList, Agencylist, List, data, Data, result, etc.)
+//   const extractArray = (obj) => {
+//     if (Array.isArray(obj)) return obj;
+//     if (!obj || typeof obj !== "object") return [];
+
+//     // known/likely keys pehle try karo
+//     const knownKeys = [
+//       "data",
+//       "Data",
+//       "result",
+//       "Result",
+//       "AgencyList",
+//       "Agencylist",
+//       "List",
+//       "Agencies",
+//       "AgencyMaster",
+//     ];
+//     for (const key of knownKeys) {
+//       if (Array.isArray(obj[key])) return obj[key];
+//     }
+
+//     // fallback: object ke andar jo bhi pehla array mile wahi le lo
+//     for (const key of Object.keys(obj)) {
+//       if (Array.isArray(obj[key])) return obj[key];
+//     }
+
+//     return [];
+//   };
+
 //   const fetchFlights = useCallback(async () => {
 //     try {
 //       setLoading(true);
@@ -54,19 +85,19 @@
 //       });
 
 //       const data = await response.json();
+//       console.log("RAW API RESPONSE (PortalAgency):", data); // 🔍 DEBUG - actual key naam yahin se pata chalega
 
-//       let arr = [];
 //       if (response.ok) {
-//         if (Array.isArray(data)) arr = data;
-//         else if (Array.isArray(data.data)) arr = data.data;
-//         else if (Array.isArray(data.Data)) arr = data.Data;
-//         else if (Array.isArray(data.result)) arr = data.result;
-
+//         const arr = extractArray(data);
 //         setFlights(arr || []);
+//         if (!arr || arr.length === 10) {
+//           setError("No Data Found");
+//         }
 //       } else {
 //         setError(data?.Message || "No Data Found");
 //       }
-//     } catch {
+//     } catch (err) {
+//       console.error("Agency fetch failed:", err);
 //       setError("Failed to fetch data. Please try again.");
 //     } finally {
 //       setLoading(false);
@@ -380,11 +411,13 @@
 //   );
 // }
 
+
 import React, { useEffect, useState, useCallback } from "react";
 import Sidebar from "./Sidebar";
 import "../CSS/Flight.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import Footer2 from "./Footer2";
+import * as XLSX from "xlsx";
 
 export default function Flights() {
   const [flights, setFlights] = useState([]);
@@ -414,6 +447,36 @@ export default function Flights() {
   const ADMIN_KEY = process.env.REACT_APP_ADMIN_KEY;
   const PORTAL_ID = process.env.REACT_APP_PORTAL_ID;
 
+  // 🔍 Response ke andar jo bhi array field ho usko dhoondh ke nikal deta hai,
+  // chahe backend kisi bhi naam se bheje (AgencyList, Agencylist, List, data, Data, result, etc.)
+  const extractArray = (obj) => {
+    if (Array.isArray(obj)) return obj;
+    if (!obj || typeof obj !== "object") return [];
+
+    // known/likely keys pehle try karo
+    const knownKeys = [
+      "data",
+      "Data",
+      "result",
+      "Result",
+      "AgencyList",
+      "Agencylist",
+      "List",
+      "Agencies",
+      "AgencyMaster",
+    ];
+    for (const key of knownKeys) {
+      if (Array.isArray(obj[key])) return obj[key];
+    }
+
+    // fallback: object ke andar jo bhi pehla array mile wahi le lo
+    for (const key of Object.keys(obj)) {
+      if (Array.isArray(obj[key])) return obj[key];
+    }
+
+    return [];
+  };
+
   const fetchFlights = useCallback(async () => {
     try {
       setLoading(true);
@@ -436,19 +499,19 @@ export default function Flights() {
       });
 
       const data = await response.json();
+      console.log("RAW API RESPONSE (PortalAgency):", data); // 🔍 DEBUG - actual key naam yahin se pata chalega
 
-      let arr = [];
       if (response.ok) {
-        if (Array.isArray(data)) arr = data;
-        else if (Array.isArray(data.data)) arr = data.data;
-        else if (Array.isArray(data.Data)) arr = data.Data;
-        else if (Array.isArray(data.result)) arr = data.result;
-
+        const arr = extractArray(data);
         setFlights(arr || []);
+        if (!arr || arr.length === 10) {
+          setError("No Data Found");
+        }
       } else {
         setError(data?.Message || "No Data Found");
       }
-    } catch {
+    } catch (err) {
+      console.error("Agency fetch failed:", err);
       setError("Failed to fetch data. Please try again.");
     } finally {
       setLoading(false);
@@ -519,6 +582,45 @@ export default function Flights() {
 
   const activeCount = flights.filter((a) => a.AgencyStatus).length;
   const inactiveCount = flights.filter((a) => !a.AgencyStatus).length;
+
+  // ── Export currently filtered agencies to an Excel file ──
+  const handleExportExcel = () => {
+    if (!filtered.length) {
+      alert("No data to export");
+      return;
+    }
+
+    const exportRows = filtered.map((a) => ({
+      "Agency Code": a.AgencyCode || "",
+      "Agency Email": a.AgenyEmail || "",
+      "Agency Name": a.AgencyName || "",
+      "Agency Mobile": a.MobileNumber || "",
+      "Agency Type": a.AgencyType || "N/A",
+      "Credit Limit": a.CreditBalance ?? "",
+      "Limit": a.Limit ?? "",
+      "Status": a.AgencyStatus ? "Active" : "In Active",
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(exportRows);
+
+    // Column widths thoda readable rakhne ke liye
+    worksheet["!cols"] = [
+      { wch: 14 }, // Agency Code
+      { wch: 26 }, // Agency Email
+      { wch: 20 }, // Agency Name
+      { wch: 16 }, // Agency Mobile
+      { wch: 14 }, // Agency Type
+      { wch: 14 }, // Credit Limit
+      { wch: 12 }, // Limit
+      { wch: 12 }, // Status
+    ];
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Agencies");
+
+    const dateStr = new Date().toISOString().slice(0, 10);
+    XLSX.writeFile(workbook, `Agency-Master-${dateStr}.xlsx`);
+  };
 
   return (
     <>
@@ -649,10 +751,39 @@ export default function Flights() {
         </div>
 
         <div className="fl-table-card">
-          <div className="fl-table-topbar">
+          <div
+            className="fl-table-topbar"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              flexWrap: "wrap",
+              gap: "10px",
+            }}
+          >
             <div className="fl-table-title">
               All Agencies ({filtered.length})
             </div>
+
+            <button
+              onClick={handleExportExcel}
+              disabled={!filtered.length}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                padding: "10px 18px",
+                backgroundColor: filtered.length ? "#007bff" : "#9fc4f5",
+                color: "white",
+                border: "none",
+                borderRadius: "4px",
+                cursor: filtered.length ? "pointer" : "not-allowed",
+                fontSize: "14px",
+                fontWeight: 600,
+              }}
+            >
+              📊 Export to Excel
+            </button>
           </div>
 
           {loading && (
