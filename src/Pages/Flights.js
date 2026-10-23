@@ -1,23 +1,25 @@
 
+
+
 // import React, { useEffect, useState, useCallback } from "react";
 // import Sidebar from "./Sidebar";
 // import "../CSS/Flight.css";
 // import { useNavigate, useLocation } from "react-router-dom";
 // import Footer2 from "./Footer2";
+// import * as XLSX from "xlsx";
+// import { loadAgencyConfig } from "../util/loadConfig";
 
 // export default function Flights() {
 //   const [flights, setFlights] = useState([]);
 //   const [loading, setLoading] = useState(true);
 //   const [error, setError] = useState("");
 
-//   // ── Filter input states (what the user is typing) ──
 //   const [agentCode, setAgentCode] = useState("");
 //   const [loginEmail, setLoginEmail] = useState("");
 //   const [agencyName, setAgencyName] = useState("");
 //   const [mobileNo, setMobileNo] = useState("");
 //   const [statusFilter, setStatusFilter] = useState("");
 
-//   // ── Applied filters (only updated when "Search" is clicked) ──
 //   const [appliedFilters, setAppliedFilters] = useState({
 //     agentCode: "",
 //     loginEmail: "",
@@ -26,20 +28,42 @@
 //     statusFilter: "",
 //   });
 
+//   const [config, setConfig] = useState({
+//     AdminKey: "",
+//     PortalId: "",
+//   });
+//   const [loadingConfig, setLoadingConfig] = useState(true);
+//   const [configReady, setConfigReady] = useState(false);
+
 //   const navigate = useNavigate();
 //   const location = useLocation();
 
 //   const API_URL = process.env.REACT_APP_API_3;
-//   const ADMIN_KEY = process.env.REACT_APP_ADMIN_KEY;
-//   const PORTAL_ID = process.env.REACT_APP_PORTAL_ID;
 
-//   // 🔍 Response ke andar jo bhi array field ho usko dhoondh ke nikal deta hai,
-//   // chahe backend kisi bhi naam se bheje (AgencyList, Agencylist, List, data, Data, result, etc.)
+//   useEffect(() => {
+//     const fetchConfig = async () => {
+//       try {
+//         const cfg = await loadAgencyConfig();
+//         setConfig({
+//           AdminKey: cfg.AdminKey || "",
+//           PortalId: cfg.PortalId || "",
+//         });
+//         setConfigReady(true);
+//       } catch (err) {
+//         console.error("Config load failed:", err);
+//         setError("Config load failed. Please refresh.");
+//         setLoading(false);
+//       } finally {
+//         setLoadingConfig(false);
+//       }
+//     };
+//     fetchConfig();
+//   }, []);
+
 //   const extractArray = (obj) => {
 //     if (Array.isArray(obj)) return obj;
 //     if (!obj || typeof obj !== "object") return [];
 
-//     // known/likely keys pehle try karo
 //     const knownKeys = [
 //       "data",
 //       "Data",
@@ -54,16 +78,19 @@
 //     for (const key of knownKeys) {
 //       if (Array.isArray(obj[key])) return obj[key];
 //     }
-
-//     // fallback: object ke andar jo bhi pehla array mile wahi le lo
 //     for (const key of Object.keys(obj)) {
 //       if (Array.isArray(obj[key])) return obj[key];
 //     }
-
 //     return [];
 //   };
 
 //   const fetchFlights = useCallback(async () => {
+//     if (!config.AdminKey || !config.PortalId) {
+//       setError("AdminKey / PortalId missing from config");
+//       setLoading(false);
+//       return;
+//     }
+
 //     try {
 //       setLoading(true);
 //       setError("");
@@ -75,9 +102,9 @@
 //           APIToken: null,
 //           AgencyKey: null,
 //           AgencyCode: null,
-//           AdminKey: ADMIN_KEY,
+//           AdminKey: config.AdminKey,
 //           IsB2B: true,
-//           PortalId: Number(PORTAL_ID),
+//           PortalId: Number(config.PortalId),
 //           AgencyStatus: null,
 //           EmailId: null,
 //           MobileNumber: null,
@@ -85,12 +112,12 @@
 //       });
 
 //       const data = await response.json();
-//       console.log("RAW API RESPONSE (PortalAgency):", data); // 🔍 DEBUG - actual key naam yahin se pata chalega
+//       console.log("RAW API RESPONSE (PortalAgency):", data);
 
 //       if (response.ok) {
 //         const arr = extractArray(data);
 //         setFlights(arr || []);
-//         if (!arr || arr.length === 10) {
+//         if (!arr || arr.length === 0) {
 //           setError("No Data Found");
 //         }
 //       } else {
@@ -102,19 +129,20 @@
 //     } finally {
 //       setLoading(false);
 //     }
-//   }, [API_URL, ADMIN_KEY, PORTAL_ID]);
-
-//   // initial load
-//   useEffect(() => {
-//     fetchFlights();
-//   }, [fetchFlights]);
+//   }, [API_URL, config.AdminKey, config.PortalId]);
 
 //   useEffect(() => {
-//     if (location.state?.refresh) {
+//     if (configReady) {
+//       fetchFlights();
+//     }
+//   }, [configReady, fetchFlights]);
+
+//   useEffect(() => {
+//     if (location.state?.refresh && configReady) {
 //       fetchFlights();
 //       navigate("/flights", { replace: true });
 //     }
-//   }, [location.state?.refresh, fetchFlights, navigate]);
+//   }, [location.state?.refresh, fetchFlights, navigate, configReady]);
 
 //   const handleSearch = () => {
 //     setAppliedFilters({
@@ -123,6 +151,21 @@
 //       agencyName,
 //       mobileNo,
 //       statusFilter,
+//     });
+//   };
+
+//   const handleClear = () => {
+//     setAgentCode("");
+//     setLoginEmail("");
+//     setAgencyName("");
+//     setMobileNo("");
+//     setStatusFilter("");
+//     setAppliedFilters({
+//       agentCode: "",
+//       loginEmail: "",
+//       agencyName: "",
+//       mobileNo: "",
+//       statusFilter: "",
 //     });
 //   };
 
@@ -169,25 +212,98 @@
 //   const activeCount = flights.filter((a) => a.AgencyStatus).length;
 //   const inactiveCount = flights.filter((a) => !a.AgencyStatus).length;
 
+//   const handleExportExcel = () => {
+//     if (!filtered.length) {
+//       alert("No data to export");
+//       return;
+//     }
+
+//     const exportRows = filtered.map((a) => ({
+//       "Agency Code": a.AgencyCode || "",
+//       "Agency Email": a.AgenyEmail || "",
+//       "Agency Name": a.AgencyName || "",
+//       "Agency Mobile": a.MobileNumber || "",
+//       "Agency Type": a.AgencyType || "N/A",
+//       "Credit Limit": a.CreditBalance ?? "",
+//       Limit: a.Limit ?? "",
+//       Status: a.AgencyStatus ? "Active" : "In Active",
+//     }));
+
+//     const worksheet = XLSX.utils.json_to_sheet(exportRows);
+//     worksheet["!cols"] = [
+//       { wch: 14 },
+//       { wch: 26 },
+//       { wch: 20 },
+//       { wch: 16 },
+//       { wch: 14 },
+//       { wch: 14 },
+//       { wch: 12 },
+//       { wch: 12 },
+//     ];
+
+//     const workbook = XLSX.utils.book_new();
+//     XLSX.utils.book_append_sheet(workbook, worksheet, "Agencies");
+//     const dateStr = new Date().toISOString().slice(0, 10);
+//     XLSX.writeFile(workbook, `Agency-Master-${dateStr}.xlsx`);
+//   };
+
+//   const getInitials = (name) => {
+//     if (!name) return "?";
+//     return name
+//       .split(" ")
+//       .map((n) => n[0])
+//       .slice(0, 2)
+//       .join("")
+//       .toUpperCase();
+//   };
+
+//   if (loadingConfig) {
+//     return (
+//       <>
+//         <Sidebar />
+//         <div className="fl-wrapper">
+//           <div className="fl-loading">
+//             <div className="fl-spinner" /> Loading Config...
+//           </div>
+//         </div>
+//         <Footer2 />
+//       </>
+//     );
+//   }
+
 //   return (
 //     <>
 //       <Sidebar />
 
 //       <div className="fl-wrapper">
+//         {/* ── Header ── */}
 //         <div className="fl-header">
 //           <div className="fl-header-left">
 //             <div className="fl-page-title">
-//               <span>🤝</span> Agency Master
+//               <span>🏢</span> Agency Master
 //             </div>
 //             <div className="fl-page-sub">
-//               Manage all registered agencies
+//               Manage all registered agencies & their status
 //             </div>
+//           </div>
+
+//           <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+//             <button className="fl-btn-edit" onClick={handleExportExcel}>
+//               ⬇ Export Excel
+//             </button>
+//             <button
+//               className="fl-btn-update"
+//               onClick={() => navigate("/add-agency")}
+//             >
+//               + Add Agency
+//             </button>
 //           </div>
 //         </div>
 
+//         {/* ── Stats ── */}
 //         <div className="fl-stats">
 //           <div className="fl-stat-card">
-//             <div className="fl-stat-icon blue">🏢</div>
+//             <div className="fl-stat-icon blue">📋</div>
 //             <div>
 //               <div className="fl-stat-value">{flights.length}</div>
 //               <div className="fl-stat-label">Total Agencies</div>
@@ -203,210 +319,222 @@
 //           </div>
 
 //           <div className="fl-stat-card">
-//             <div className="fl-stat-icon red">❌</div>
+//             <div className="fl-stat-icon red">⛔</div>
 //             <div>
 //               <div className="fl-stat-value">{inactiveCount}</div>
 //               <div className="fl-stat-label">Inactive</div>
 //             </div>
 //           </div>
+
+//           <div className="fl-stat-card">
+//             <div className="fl-stat-icon gold">🔍</div>
+//             <div>
+//               <div className="fl-stat-value">{filtered.length}</div>
+//               <div className="fl-stat-label">Showing</div>
+//             </div>
+//           </div>
 //         </div>
 
-//         {/* ── Filter Row (matches Agency Master reference) ── */}
-//         <div className="fl-table-card" style={{ marginBottom: "16px" }}>
-//           <div
-//             style={{
-//               display: "flex",
-//               flexWrap: "wrap",
-//               gap: "16px",
-//               alignItems: "flex-end",
-//               padding: "16px",
-//             }}
-//           >
-//             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-//               <label style={{ fontSize: "13px", fontWeight: 600 }}>Agent Code</label>
+//         {/* ── Table Card ── */}
+//         <div className="fl-table-card">
+//           {/* Topbar with filters */}
+//           <div className="fl-table-topbar">
+//             <div className="fl-table-title">
+//               Agency List ({filtered.length})
+//             </div>
+
+//             <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", alignItems: "center" }}>
 //               <input
 //                 className="fl-search-box"
 //                 type="text"
-//                 placeholder="Enter Agency Code"
+//                 placeholder="Agency Code..."
 //                 value={agentCode}
 //                 onChange={(e) => setAgentCode(e.target.value)}
 //               />
-//             </div>
-
-//             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-//               <label style={{ fontSize: "13px", fontWeight: 600 }}>Login Email</label>
 //               <input
 //                 className="fl-search-box"
 //                 type="text"
-//                 placeholder="Enter Email Id"
+//                 placeholder="Email..."
 //                 value={loginEmail}
 //                 onChange={(e) => setLoginEmail(e.target.value)}
 //               />
-//             </div>
-
-//             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-//               <label style={{ fontSize: "13px", fontWeight: 600 }}>agencyName</label>
 //               <input
 //                 className="fl-search-box"
 //                 type="text"
-//                 placeholder="Enter Agency Name"
+//                 placeholder="Agency Name..."
 //                 value={agencyName}
 //                 onChange={(e) => setAgencyName(e.target.value)}
 //               />
-//             </div>
-
-//             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-//               <label style={{ fontSize: "13px", fontWeight: 600 }}>Mobile No.</label>
 //               <input
 //                 className="fl-search-box"
 //                 type="text"
-//                 placeholder="Enter Booking Id"
+//                 placeholder="Mobile..."
 //                 value={mobileNo}
 //                 onChange={(e) => setMobileNo(e.target.value)}
 //               />
-//             </div>
-
-//             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-//               <label style={{ fontSize: "13px", fontWeight: 600 }}>Status</label>
 //               <select
 //                 className="fl-search-box"
 //                 value={statusFilter}
 //                 onChange={(e) => setStatusFilter(e.target.value)}
+//                 style={{ width: "140px", cursor: "pointer" }}
 //               >
-//                 <option value="">----- Select -----</option>
+//                 <option value="">All Status</option>
 //                 <option value="active">Active</option>
-//                 <option value="inactive">In Active</option>
+//                 <option value="inactive">Inactive</option>
 //               </select>
-//             </div>
 
-//             <button
-//               style={{
-//                 padding: "10px 20px",
-//                 backgroundColor: "#007bff",
-//                 color: "white",
-//                 border: "none",
-//                 borderRadius: "4px",
-//                 cursor: "pointer",
-//                 fontSize: "14px",
-//                 fontWeight: 600,
-//               }}
-//               onClick={handleSearch}
-//             >
-//               🔍 Search
-//             </button>
-//           </div>
-//         </div>
-
-//         <div className="fl-table-card">
-//           <div className="fl-table-topbar">
-//             <div className="fl-table-title">
-//               All Agencies ({filtered.length})
+//               <button className="fl-btn-edit" onClick={handleSearch}>
+//                 Search
+//               </button>
+//               <button className="fl-btn-update" onClick={handleClear}>
+//                 Clear
+//               </button>
 //             </div>
 //           </div>
 
-//           {loading && (
+//           {/* Loading / Error / Table */}
+//           {loading ? (
 //             <div className="fl-loading">
-//               <div className="fl-spinner" />
-//               Loading agencies...
+//               <div className="fl-spinner" /> Loading Agencies...
 //             </div>
-//           )}
-
-//           {!loading && error && (
-//             <div className="fl-error">⚠️ {error}</div>
-//           )}
-
-//           {!loading && !error && filtered.length === 0 && (
-//             <div className="fl-empty">No agencies found.</div>
-//           )}
-
-//           {!loading && !error && filtered.length > 0 && (
-//             <div className="fl-table-scroll">
-//               <table className="fl-table">
-//                 <thead>
-//                   <tr>
-//                     <th>Agency Code</th>
-//                     <th>Agency Email</th>
-//                     <th>AgencyType</th>
-//                     <th>Agency Name</th>
-//                     <th>Agency Mobile</th>
-//                     <th>Agency Type</th>
-//                     <th>Credit Limit</th>
-//                     <th>Limit</th>
-//                     <th>Status</th>
-//                     <th>Edit</th>
-//                     <th>Balance Update</th>
-//                   </tr>
-//                 </thead>
-
-//                 <tbody>
-//                   {filtered.map((a, i) => (
-//                     <tr key={i}>
-//                       <td>{a.AgencyCode}</td>
-//                       <td>{a.AgenyEmail}</td>
-//                       <td>
-//                         <span className="fl-agency-type-text">
-//                           {a.AgencyType || "N/A"}
-//                         </span>
-//                       </td>
-//                       <td>{a.AgencyName}</td>
-//                       <td>{a.MobileNumber}</td>
-//                       <td>
-//                         <span className="fl-agency-type-text">
-//                           {a.AgencyType || "N/A"}
-//                         </span>
-//                       </td>
-//                       <td>₹ {a.CreditBalance}</td>
-//                       <td>₹ {a.Limit}</td>
-
-//                       <td>
-//                         <span className={`fl-badge ${a.AgencyStatus ? "active" : "inactive"}`}>
-//                           {a.AgencyStatus ? "Active" : "In Active"}
-//                         </span>
-//                       </td>
-
-//                       <td>
-//                         <button
-//                           style={{
-//                             padding: "8px 16px",
-//                             backgroundColor: "#007bff",
-//                             color: "white",
-//                             border: "none",
-//                             borderRadius: "4px",
-//                             cursor: "pointer",
-//                             fontSize: "14px",
-//                           }}
-//                           onClick={() => navigate("/edit-agency", { state: { AgencyKey: a.AgencyKey } })}
-//                         >
-//                           Edit
-//                         </button>
-//                       </td>
-
-//                       <td>
-//                         <button
-//                           style={{
-//                             padding: "8px 16px",
-//                             backgroundColor: "#007bff",
-//                             color: "white",
-//                             border: "none",
-//                             borderRadius: "4px",
-//                             cursor: "pointer",
-//                             fontSize: "14px",
-//                           }}
-//                           onClick={() => navigate("/update-agency", { state: { AgencyKey: a.AgencyKey } })}
-//                         >
-//                           Update
-//                         </button>
-//                       </td>
+//           ) : error ? (
+//             <div className="fl-error">⚠ {error}</div>
+//           ) : filtered.length === 0 ? (
+//             <div className="fl-empty">No agencies found</div>
+//           ) : (
+//             <>
+//               {/* Desktop Table */}
+//               <div className="fl-table-scroll">
+//                 <table className="fl-table">
+//                   <thead>
+//                     <tr>
+//                       <th>Agency</th>
+//                       <th>Email</th>
+//                       <th>Mobile</th>
+//                       <th>Type</th>
+//                       <th>Credit Limit</th>
+//                       <th>Limit</th>
+//                       <th>Status</th>
+//                       <th>Action</th>
 //                     </tr>
-//                   ))}
-//                 </tbody>
-//               </table>
-//             </div>
+//                   </thead>
+//                   <tbody>
+//                     {filtered.map((a, idx) => (
+//                       <tr key={a.AgencyCode || idx}>
+//                         <td>
+//                           <div className="fl-agency-cell">
+//                             <div className="fl-agency-avatar">
+//                               {getInitials(a.AgencyName)}
+//                             </div>
+//                             <div>
+//                               <div className="fl-agency-name">
+//                                 {a.AgencyName || "-"}
+//                               </div>
+//                               <div className="fl-agency-code">
+//                                 {a.AgencyCode || "-"}
+//                               </div>
+//                             </div>
+//                           </div>
+//                         </td>
+//                         <td>{a.AgenyEmail || "-"}</td>
+//                         <td>{a.MobileNumber || "-"}</td>
+//                         <td>{a.AgencyType || "N/A"}</td>
+//                         <td>
+//                           <span className="fl-balance">
+//                             {a.CreditBalance ?? "-"}
+//                           </span>
+//                         </td>
+//                         <td>
+//                           <span className="fl-balance">{a.Limit ?? "-"}</span>
+//                         </td>
+//                         <td>
+//                           <span
+//                             className={`fl-badge ${
+//                               a.AgencyStatus ? "active" : "inactive"
+//                             }`}
+//                           >
+//                             {a.AgencyStatus ? "Active" : "Inactive"}
+//                           </span>
+//                         </td>
+//                         <td>
+//                           <button
+//                             className="fl-btn-edit"
+//                             onClick={() =>
+//                               navigate(`/edit-agency/${a.AgencyCode}`, {
+//                                 state: { agency: a },
+//                               })
+//                             }
+//                           >
+//                             Edit
+//                           </button>
+//                         </td>
+//                       </tr>
+//                     ))}
+//                   </tbody>
+//                 </table>
+//               </div>
+
+//               {/* Mobile Card View */}
+//               <div className="fl-card-view">
+//                 {filtered.map((a, idx) => (
+//                   <div className="fl-mobile-card" key={a.AgencyCode || idx}>
+//                     <div className="fl-mobile-card-header">
+//                       <div className="fl-mobile-card-title">
+//                         {a.AgencyName || "-"}
+//                       </div>
+//                       <span
+//                         className={`fl-badge ${
+//                           a.AgencyStatus ? "active" : "inactive"
+//                         }`}
+//                       >
+//                         {a.AgencyStatus ? "Active" : "Inactive"}
+//                       </span>
+//                     </div>
+
+//                     <div className="fl-mobile-card-row">
+//                       <b>Code</b>
+//                       <span>{a.AgencyCode || "-"}</span>
+//                     </div>
+//                     <div className="fl-mobile-card-row">
+//                       <b>Email</b>
+//                       <span>{a.AgenyEmail || "-"}</span>
+//                     </div>
+//                     <div className="fl-mobile-card-row">
+//                       <b>Mobile</b>
+//                       <span>{a.MobileNumber || "-"}</span>
+//                     </div>
+//                     <div className="fl-mobile-card-row">
+//                       <b>Type</b>
+//                       <span>{a.AgencyType || "N/A"}</span>
+//                     </div>
+//                     <div className="fl-mobile-card-row">
+//                       <b>Credit</b>
+//                       <span className="fl-balance">
+//                         {a.CreditBalance ?? "-"}
+//                       </span>
+//                     </div>
+
+//                     <div className="fl-mobile-card-actions">
+//                       <button
+//                         className="fl-btn-edit"
+//                         onClick={() =>
+//                           navigate(`/edit-agency/${a.AgencyCode}`, {
+//                             state: { agency: a },
+//                           })
+//                         }
+//                       >
+//                         Edit
+//                       </button>
+//                     </div>
+//                   </div>
+//                 ))}
+//               </div>
+//             </>
 //           )}
 //         </div>
-//       </div>
 
-//       <Footer2 />
+//         <Footer2 />
+//       </div>
 //     </>
 //   );
 // }
@@ -418,20 +546,19 @@ import "../CSS/Flight.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import Footer2 from "./Footer2";
 import * as XLSX from "xlsx";
+import { loadAgencyConfig } from "../util/loadConfig";
 
 export default function Flights() {
   const [flights, setFlights] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // ── Filter input states (what the user is typing) ──
   const [agentCode, setAgentCode] = useState("");
   const [loginEmail, setLoginEmail] = useState("");
   const [agencyName, setAgencyName] = useState("");
   const [mobileNo, setMobileNo] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
 
-  // ── Applied filters (only updated when "Search" is clicked) ──
   const [appliedFilters, setAppliedFilters] = useState({
     agentCode: "",
     loginEmail: "",
@@ -440,20 +567,42 @@ export default function Flights() {
     statusFilter: "",
   });
 
+  const [config, setConfig] = useState({
+    AdminKey: "",
+    PortalId: "",
+  });
+  const [loadingConfig, setLoadingConfig] = useState(true);
+  const [configReady, setConfigReady] = useState(false);
+
   const navigate = useNavigate();
   const location = useLocation();
 
   const API_URL = process.env.REACT_APP_API_3;
-  const ADMIN_KEY = process.env.REACT_APP_ADMIN_KEY;
-  const PORTAL_ID = process.env.REACT_APP_PORTAL_ID;
 
-  // 🔍 Response ke andar jo bhi array field ho usko dhoondh ke nikal deta hai,
-  // chahe backend kisi bhi naam se bheje (AgencyList, Agencylist, List, data, Data, result, etc.)
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const cfg = await loadAgencyConfig();
+        setConfig({
+          AdminKey: cfg.AdminKey || "",
+          PortalId: cfg.PortalId || "",
+        });
+        setConfigReady(true);
+      } catch (err) {
+        console.error("Config load failed:", err);
+        setError("Config load failed. Please refresh.");
+        setLoading(false);
+      } finally {
+        setLoadingConfig(false);
+      }
+    };
+    fetchConfig();
+  }, []);
+
   const extractArray = (obj) => {
     if (Array.isArray(obj)) return obj;
     if (!obj || typeof obj !== "object") return [];
 
-    // known/likely keys pehle try karo
     const knownKeys = [
       "data",
       "Data",
@@ -468,16 +617,19 @@ export default function Flights() {
     for (const key of knownKeys) {
       if (Array.isArray(obj[key])) return obj[key];
     }
-
-    // fallback: object ke andar jo bhi pehla array mile wahi le lo
     for (const key of Object.keys(obj)) {
       if (Array.isArray(obj[key])) return obj[key];
     }
-
     return [];
   };
 
   const fetchFlights = useCallback(async () => {
+    if (!config.AdminKey || !config.PortalId) {
+      setError("AdminKey / PortalId missing from config");
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       setError("");
@@ -489,9 +641,9 @@ export default function Flights() {
           APIToken: null,
           AgencyKey: null,
           AgencyCode: null,
-          AdminKey: ADMIN_KEY,
+          AdminKey: config.AdminKey,
           IsB2B: true,
-          PortalId: Number(PORTAL_ID),
+          PortalId: Number(config.PortalId),
           AgencyStatus: null,
           EmailId: null,
           MobileNumber: null,
@@ -499,12 +651,12 @@ export default function Flights() {
       });
 
       const data = await response.json();
-      console.log("RAW API RESPONSE (PortalAgency):", data); // 🔍 DEBUG - actual key naam yahin se pata chalega
+      console.log("RAW API RESPONSE (PortalAgency):", data);
 
       if (response.ok) {
         const arr = extractArray(data);
         setFlights(arr || []);
-        if (!arr || arr.length === 10) {
+        if (!arr || arr.length === 0) {
           setError("No Data Found");
         }
       } else {
@@ -516,19 +668,43 @@ export default function Flights() {
     } finally {
       setLoading(false);
     }
-  }, [API_URL, ADMIN_KEY, PORTAL_ID]);
-
-  // initial load
-  useEffect(() => {
-    fetchFlights();
-  }, [fetchFlights]);
+  }, [API_URL, config.AdminKey, config.PortalId]);
 
   useEffect(() => {
-    if (location.state?.refresh) {
+    if (configReady) {
+      fetchFlights();
+    }
+  }, [configReady, fetchFlights]);
+
+  useEffect(() => {
+    if (location.state?.refresh && configReady) {
       fetchFlights();
       navigate("/flights", { replace: true });
     }
-  }, [location.state?.refresh, fetchFlights, navigate]);
+  }, [location.state?.refresh, fetchFlights, navigate, configReady]);
+
+  // ✅ FIX: EditAgency ko AgencyKey chahiye (state.AgencyKey), isliye wahi bhej rahe hain.
+  // sessionStorage mein bhi save karte hain taaki edit page refresh par bhi chale.
+  const handleEdit = (a) => {
+    const agencyKey = a.AgencyKey || "";
+
+    if (!agencyKey) {
+      console.warn(
+        "AgencyKey list API response mein nahi mila. Row object:",
+        a
+      );
+    }
+
+    try {
+      sessionStorage.setItem(`agencyKey_${a.AgencyCode}`, agencyKey);
+    } catch (e) {
+      // storage unavailable, ignore
+    }
+
+    navigate(`/edit-agency/${a.AgencyCode}`, {
+      state: { AgencyKey: agencyKey, agency: a },
+    });
+  };
 
   const handleSearch = () => {
     setAppliedFilters({
@@ -537,6 +713,21 @@ export default function Flights() {
       agencyName,
       mobileNo,
       statusFilter,
+    });
+  };
+
+  const handleClear = () => {
+    setAgentCode("");
+    setLoginEmail("");
+    setAgencyName("");
+    setMobileNo("");
+    setStatusFilter("");
+    setAppliedFilters({
+      agentCode: "",
+      loginEmail: "",
+      agencyName: "",
+      mobileNo: "",
+      statusFilter: "",
     });
   };
 
@@ -583,7 +774,6 @@ export default function Flights() {
   const activeCount = flights.filter((a) => a.AgencyStatus).length;
   const inactiveCount = flights.filter((a) => !a.AgencyStatus).length;
 
-  // ── Export currently filtered agencies to an Excel file ──
   const handleExportExcel = () => {
     if (!filtered.length) {
       alert("No data to export");
@@ -597,50 +787,85 @@ export default function Flights() {
       "Agency Mobile": a.MobileNumber || "",
       "Agency Type": a.AgencyType || "N/A",
       "Credit Limit": a.CreditBalance ?? "",
-      "Limit": a.Limit ?? "",
-      "Status": a.AgencyStatus ? "Active" : "In Active",
+      Limit: a.Limit ?? "",
+      Status: a.AgencyStatus ? "Active" : "In Active",
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(exportRows);
-
-    // Column widths thoda readable rakhne ke liye
     worksheet["!cols"] = [
-      { wch: 14 }, // Agency Code
-      { wch: 26 }, // Agency Email
-      { wch: 20 }, // Agency Name
-      { wch: 16 }, // Agency Mobile
-      { wch: 14 }, // Agency Type
-      { wch: 14 }, // Credit Limit
-      { wch: 12 }, // Limit
-      { wch: 12 }, // Status
+      { wch: 14 },
+      { wch: 26 },
+      { wch: 20 },
+      { wch: 16 },
+      { wch: 14 },
+      { wch: 14 },
+      { wch: 12 },
+      { wch: 12 },
     ];
 
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Agencies");
-
     const dateStr = new Date().toISOString().slice(0, 10);
     XLSX.writeFile(workbook, `Agency-Master-${dateStr}.xlsx`);
   };
+
+  const getInitials = (name) => {
+    if (!name) return "?";
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .slice(0, 2)
+      .join("")
+      .toUpperCase();
+  };
+
+  if (loadingConfig) {
+    return (
+      <>
+        <Sidebar />
+        <div className="fl-wrapper">
+          <div className="fl-loading">
+            <div className="fl-spinner" /> Loading Config...
+          </div>
+        </div>
+        <Footer2 />
+      </>
+    );
+  }
 
   return (
     <>
       <Sidebar />
 
       <div className="fl-wrapper">
+        {/* ── Header ── */}
         <div className="fl-header">
           <div className="fl-header-left">
             <div className="fl-page-title">
-              <span>🤝</span> Agency Master
+              <span>🏢</span> Agency Master
             </div>
             <div className="fl-page-sub">
-              Manage all registered agencies
+              Manage all registered agencies & their status
             </div>
+          </div>
+
+          <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+            <button className="fl-btn-edit" onClick={handleExportExcel}>
+              ⬇ Export Excel
+            </button>
+            <button
+              className="fl-btn-update"
+              onClick={() => navigate("/add-agency")}
+            >
+              + Add Agency
+            </button>
           </div>
         </div>
 
+        {/* ── Stats ── */}
         <div className="fl-stats">
           <div className="fl-stat-card">
-            <div className="fl-stat-icon blue">🏢</div>
+            <div className="fl-stat-icon blue">📋</div>
             <div>
               <div className="fl-stat-value">{flights.length}</div>
               <div className="fl-stat-label">Total Agencies</div>
@@ -656,239 +881,221 @@ export default function Flights() {
           </div>
 
           <div className="fl-stat-card">
-            <div className="fl-stat-icon red">❌</div>
+            <div className="fl-stat-icon red">⛔</div>
             <div>
               <div className="fl-stat-value">{inactiveCount}</div>
               <div className="fl-stat-label">Inactive</div>
             </div>
           </div>
+
+          <div className="fl-stat-card">
+            <div className="fl-stat-icon gold">🔍</div>
+            <div>
+              <div className="fl-stat-value">{filtered.length}</div>
+              <div className="fl-stat-label">Showing</div>
+            </div>
+          </div>
         </div>
 
-        {/* ── Filter Row (matches Agency Master reference) ── */}
-        <div className="fl-table-card" style={{ marginBottom: "16px" }}>
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "16px",
-              alignItems: "flex-end",
-              padding: "16px",
-            }}
-          >
-            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <label style={{ fontSize: "13px", fontWeight: 600 }}>Agent Code</label>
+        {/* ── Table Card ── */}
+        <div className="fl-table-card">
+          {/* Topbar with filters */}
+          <div className="fl-table-topbar">
+            <div className="fl-table-title">
+              Agency List ({filtered.length})
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                gap: "10px",
+                flexWrap: "wrap",
+                alignItems: "center",
+              }}
+            >
               <input
                 className="fl-search-box"
                 type="text"
-                placeholder="Enter Agency Code"
+                placeholder="Agency Code..."
                 value={agentCode}
                 onChange={(e) => setAgentCode(e.target.value)}
               />
-            </div>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <label style={{ fontSize: "13px", fontWeight: 600 }}>Login Email</label>
               <input
                 className="fl-search-box"
                 type="text"
-                placeholder="Enter Email Id"
+                placeholder="Email..."
                 value={loginEmail}
                 onChange={(e) => setLoginEmail(e.target.value)}
               />
-            </div>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <label style={{ fontSize: "13px", fontWeight: 600 }}>agencyName</label>
               <input
                 className="fl-search-box"
                 type="text"
-                placeholder="Enter Agency Name"
+                placeholder="Agency Name..."
                 value={agencyName}
                 onChange={(e) => setAgencyName(e.target.value)}
               />
-            </div>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <label style={{ fontSize: "13px", fontWeight: 600 }}>Mobile No.</label>
               <input
                 className="fl-search-box"
                 type="text"
-                placeholder="Enter Booking Id"
+                placeholder="Mobile..."
                 value={mobileNo}
                 onChange={(e) => setMobileNo(e.target.value)}
               />
-            </div>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <label style={{ fontSize: "13px", fontWeight: 600 }}>Status</label>
               <select
                 className="fl-search-box"
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
+                style={{ width: "140px", cursor: "pointer" }}
               >
-                <option value="">----- Select -----</option>
+                <option value="">All Status</option>
                 <option value="active">Active</option>
-                <option value="inactive">In Active</option>
+                <option value="inactive">Inactive</option>
               </select>
+
+              <button className="fl-btn-edit" onClick={handleSearch}>
+                Search
+              </button>
+              <button className="fl-btn-update" onClick={handleClear}>
+                Clear
+              </button>
             </div>
-
-            <button
-              style={{
-                padding: "10px 20px",
-                backgroundColor: "#007bff",
-                color: "white",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer",
-                fontSize: "14px",
-                fontWeight: 600,
-              }}
-              onClick={handleSearch}
-            >
-              🔍 Search
-            </button>
-          </div>
-        </div>
-
-        <div className="fl-table-card">
-          <div
-            className="fl-table-topbar"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              flexWrap: "wrap",
-              gap: "10px",
-            }}
-          >
-            <div className="fl-table-title">
-              All Agencies ({filtered.length})
-            </div>
-
-            <button
-              onClick={handleExportExcel}
-              disabled={!filtered.length}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                padding: "10px 18px",
-                backgroundColor: filtered.length ? "#007bff" : "#9fc4f5",
-                color: "white",
-                border: "none",
-                borderRadius: "4px",
-                cursor: filtered.length ? "pointer" : "not-allowed",
-                fontSize: "14px",
-                fontWeight: 600,
-              }}
-            >
-              📊 Export to Excel
-            </button>
           </div>
 
-          {loading && (
+          {/* Loading / Error / Table */}
+          {loading ? (
             <div className="fl-loading">
-              <div className="fl-spinner" />
-              Loading agencies...
+              <div className="fl-spinner" /> Loading Agencies...
             </div>
-          )}
-
-          {!loading && error && (
-            <div className="fl-error">⚠️ {error}</div>
-          )}
-
-          {!loading && !error && filtered.length === 0 && (
-            <div className="fl-empty">No agencies found.</div>
-          )}
-
-          {!loading && !error && filtered.length > 0 && (
-            <div className="fl-table-scroll">
-              <table className="fl-table">
-                <thead>
-                  <tr>
-                    <th>Agency Code</th>
-                    <th>Agency Email</th>
-                    <th>AgencyType</th>
-                    <th>Agency Name</th>
-                    <th>Agency Mobile</th>
-                    <th>Agency Type</th>
-                    <th>Credit Limit</th>
-                    <th>Limit</th>
-                    <th>Status</th>
-                    <th>Edit</th>
-                    <th>Balance Update</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {filtered.map((a, i) => (
-                    <tr key={i}>
-                      <td>{a.AgencyCode}</td>
-                      <td>{a.AgenyEmail}</td>
-                      <td>
-                        <span className="fl-agency-type-text">
-                          {a.AgencyType || "N/A"}
-                        </span>
-                      </td>
-                      <td>{a.AgencyName}</td>
-                      <td>{a.MobileNumber}</td>
-                      <td>
-                        <span className="fl-agency-type-text">
-                          {a.AgencyType || "N/A"}
-                        </span>
-                      </td>
-                      <td>₹ {a.CreditBalance}</td>
-                      <td>₹ {a.Limit}</td>
-
-                      <td>
-                        <span className={`fl-badge ${a.AgencyStatus ? "active" : "inactive"}`}>
-                          {a.AgencyStatus ? "Active" : "In Active"}
-                        </span>
-                      </td>
-
-                      <td>
-                        <button
-                          style={{
-                            padding: "8px 16px",
-                            backgroundColor: "#007bff",
-                            color: "white",
-                            border: "none",
-                            borderRadius: "4px",
-                            cursor: "pointer",
-                            fontSize: "14px",
-                          }}
-                          onClick={() => navigate("/edit-agency", { state: { AgencyKey: a.AgencyKey } })}
-                        >
-                          Edit
-                        </button>
-                      </td>
-
-                      <td>
-                        <button
-                          style={{
-                            padding: "8px 16px",
-                            backgroundColor: "#007bff",
-                            color: "white",
-                            border: "none",
-                            borderRadius: "4px",
-                            cursor: "pointer",
-                            fontSize: "14px",
-                          }}
-                          onClick={() => navigate("/update-agency", { state: { AgencyKey: a.AgencyKey } })}
-                        >
-                          Update
-                        </button>
-                      </td>
+          ) : error ? (
+            <div className="fl-error">⚠ {error}</div>
+          ) : filtered.length === 0 ? (
+            <div className="fl-empty">No agencies found</div>
+          ) : (
+            <>
+              {/* Desktop Table */}
+              <div className="fl-table-scroll">
+                <table className="fl-table">
+                  <thead>
+                    <tr>
+                      <th>Agency</th>
+                      <th>Email</th>
+                      <th>Mobile</th>
+                      <th>Type</th>
+                      <th>Credit Limit</th>
+                      <th>Limit</th>
+                      <th>Status</th>
+                      <th>Action</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {filtered.map((a, idx) => (
+                      <tr key={a.AgencyCode || idx}>
+                        <td>
+                          <div className="fl-agency-cell">
+                            <div className="fl-agency-avatar">
+                              {getInitials(a.AgencyName)}
+                            </div>
+                            <div>
+                              <div className="fl-agency-name">
+                                {a.AgencyName || "-"}
+                              </div>
+                              <div className="fl-agency-code">
+                                {a.AgencyCode || "-"}
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                        <td>{a.AgenyEmail || "-"}</td>
+                        <td>{a.MobileNumber || "-"}</td>
+                        <td>{a.AgencyType || "N/A"}</td>
+                        <td>
+                          <span className="fl-balance">
+                            {a.CreditBalance ?? "-"}
+                          </span>
+                        </td>
+                        <td>
+                          <span className="fl-balance">{a.Limit ?? "-"}</span>
+                        </td>
+                        <td>
+                          <span
+                            className={`fl-badge ${
+                              a.AgencyStatus ? "active" : "inactive"
+                            }`}
+                          >
+                            {a.AgencyStatus ? "Active" : "Inactive"}
+                          </span>
+                        </td>
+                        <td>
+                          <button
+                            className="fl-btn-edit"
+                            onClick={() => handleEdit(a)}
+                          >
+                            Edit
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile Card View */}
+              <div className="fl-card-view">
+                {filtered.map((a, idx) => (
+                  <div className="fl-mobile-card" key={a.AgencyCode || idx}>
+                    <div className="fl-mobile-card-header">
+                      <div className="fl-mobile-card-title">
+                        {a.AgencyName || "-"}
+                      </div>
+                      <span
+                        className={`fl-badge ${
+                          a.AgencyStatus ? "active" : "inactive"
+                        }`}
+                      >
+                        {a.AgencyStatus ? "Active" : "Inactive"}
+                      </span>
+                    </div>
+
+                    <div className="fl-mobile-card-row">
+                      <b>Code</b>
+                      <span>{a.AgencyCode || "-"}</span>
+                    </div>
+                    <div className="fl-mobile-card-row">
+                      <b>Email</b>
+                      <span>{a.AgenyEmail || "-"}</span>
+                    </div>
+                    <div className="fl-mobile-card-row">
+                      <b>Mobile</b>
+                      <span>{a.MobileNumber || "-"}</span>
+                    </div>
+                    <div className="fl-mobile-card-row">
+                      <b>Type</b>
+                      <span>{a.AgencyType || "N/A"}</span>
+                    </div>
+                    <div className="fl-mobile-card-row">
+                      <b>Credit</b>
+                      <span className="fl-balance">
+                        {a.CreditBalance ?? "-"}
+                      </span>
+                    </div>
+
+                    <div className="fl-mobile-card-actions">
+                      <button
+                        className="fl-btn-edit"
+                        onClick={() => handleEdit(a)}
+                      >
+                        Edit
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
           )}
         </div>
-      </div>
 
-      <Footer2 />
+        <Footer2 />
+      </div>
     </>
   );
 }

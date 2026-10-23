@@ -37,6 +37,20 @@ const menuItems = [
     path: "/gatewayreport",
     icon: "🗂️",
   },
+  {
+  label: "Cupon Code",
+  path: "/cupon-code",
+  icon: "🎟️",
+},
+
+  {
+    label: "Offline Hotels",
+    icon: "🏨",
+    subMenu: [
+      { label: "Hotel", path: "/offline-hotels/hotel" },
+      { label: "Room",  path: "/offline-hotels/room"  },
+    ],
+  },
 ];
 
 export default function AdminSidebar({ children }) {

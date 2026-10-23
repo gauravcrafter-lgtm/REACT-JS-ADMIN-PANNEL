@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Loginsec from "./Loginsec";
 import Footer from "./Footer";
 import "../CSS/Login.css";
+import { loadAgencyConfig } from "../util/loadConfig";
 
 const SERVICES = [
   { icon: "✈", label: "Flight" },
@@ -19,11 +20,15 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const navigate = useNavigate();
+  // ✅ web.config se
+  const [config, setConfig] = useState({
+    AgencyKey: "",
+    PortalId: "",
+  });
+  const [loadingConfig, setLoadingConfig] = useState(true);
 
+  const navigate = useNavigate();
   const LOGIN_API = process.env.REACT_APP_API_LOGIN;
-  const PORTAL_ID = process.env.REACT_APP_PORTAL_ID;
-  const AGENCY_KEY = process.env.REACT_APP_AGENCY_KEY;
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -36,19 +41,43 @@ function Login() {
     }
   }, [navigate]);
 
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const cfg = await loadAgencyConfig();
+        setConfig({
+          AgencyKey: cfg.AgencyKey || "",
+          PortalId: cfg.PortalId || "",
+        });
+      } catch (err) {
+        console.error("Config load failed:", err);
+        setError("Config load failed. Please refresh.");
+      } finally {
+        setLoadingConfig(false);
+      }
+    };
+    fetchConfig();
+  }, []);
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
+
+    if (!config.AgencyKey || !config.PortalId) {
+      setError("AgencyKey / PortalId missing from config");
+      return;
+    }
+
     setLoading(true);
-debugger;
+
     try {
       const payload = {
-        AgencyKey: AGENCY_KEY,
+        AgencyKey: config.AgencyKey,           // ✅ config se
         EmailId: email,
         Password: password,
-        PortalId: Number(PORTAL_ID),
+        PortalId: Number(config.PortalId),     // ✅ config se
         AccountNo: 0,
-        IsB2C: true,
+        IsB2C: false,
         IsTC: true,
       };
 
@@ -57,7 +86,7 @@ debugger;
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-debugger;
+
       const data = await response.json();
 
       if (response.ok && data.ResponseStatus === 1) {
@@ -69,7 +98,9 @@ debugger;
 
         navigate("/dashboard");
       } else {
-        setError(data.Message || "Invalid Email or Password. Please try again.");
+        setError(
+          data.Message || "Invalid Email or Password. Please try again."
+        );
       }
     } catch (err) {
       console.error("Login request failed:", err);
@@ -79,17 +110,29 @@ debugger;
     }
   };
 
+  if (loadingConfig) {
+    return (
+      <div className="mains" style={{ textAlign: "center", padding: 60 }}>
+        <p>Loading Config...</p>
+      </div>
+    );
+  }
+
   return (
     <div>
       <div className="mains">
         <h1 className="title">
           Welcome to <br />
-          <span>BOOKBYOWN Admin</span> Travel Portal
+          <span>Tripcaliber Admin</span> Travel Portal
         </h1>
 
         <div className="container">
           <div className="left">
-            <img src="/tripji.png" className="img-thumbnail" alt="Travel illustration" />
+            <img
+              src="/tripcaliber.png"
+              className="img-thumbnail"
+              alt="Travel illustration"
+            />
             <p>
               The cutting-edge business travel platform that saves
               <br />
@@ -102,7 +145,6 @@ debugger;
             <p className="subtext">Enter your credentials to continue</p>
 
             <form onSubmit={handleLogin}>
-              {/* Email */}
               <div className="field-group">
                 <label htmlFor="login-email">Email / Username</label>
                 <input
@@ -116,7 +158,6 @@ debugger;
                 />
               </div>
 
-              {/* Password */}
               <div className="field-group">
                 <label htmlFor="login-password">Password</label>
                 <div className="password-wrap">
@@ -159,11 +200,9 @@ debugger;
       </div>
 
       <Loginsec />
-      
       <Footer />
     </div>
   );
 }
 
 export default Login;
-

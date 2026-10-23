@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { loadAgencyConfig } from "../utils/loadAgencyConfig";
 
 export default function Adits() {
   const location = useLocation();
@@ -7,10 +8,14 @@ export default function Adits() {
 
   const data = location.state;
 
-  // ✅ ENV variables
   const UPDATE_API = process.env.REACT_APP_UPDATE_API;
-  const AGENCY_KEY = process.env.REACT_APP_AGENCY_KEY;
-  const PORTAL_ID = process.env.REACT_APP_PORTAL_ID;
+
+  const [config, setConfig] = useState({
+    AgencyKey: "",
+    PortalId: "",
+  });
+
+  const [loadingConfig, setLoadingConfig] = useState(true);
 
   const [formData, setFormData] = useState({
     AgencyName: data?.AgencyName || "",
@@ -19,9 +24,39 @@ export default function Adits() {
     Sector: data?.Sector || "",
   });
 
-  // ❗ Safety (direct URL open case)
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const cfg = await loadAgencyConfig();
+
+        setConfig({
+          AgencyKey: cfg.AgencyKey,
+          PortalId: cfg.PortalId,
+        });
+      } catch (error) {
+        console.error("Config load failed:", error);
+      } finally {
+        setLoadingConfig(false);
+      }
+    };
+
+    fetchConfig();
+  }, []);
+
   if (!data) {
-    return <h3 style={{ textAlign: "center" }}>❌ No Data Found</h3>;
+    return (
+      <h3 style={{ textAlign: "center" }}>
+        ❌ No Data Found
+      </h3>
+    );
+  }
+
+  if (loadingConfig) {
+    return (
+      <h3 style={{ textAlign: "center" }}>
+        Loading Config...
+      </h3>
+    );
   }
 
   const handleChange = (e) => {
@@ -35,33 +70,39 @@ export default function Adits() {
     try {
       const payload = {
         TransactionId: data.TransactionId,
-        AgencyKey: AGENCY_KEY,
-        PortalId: Number(PORTAL_ID),
+        AgencyKey: config.AgencyKey,
+        PortalId: Number(config.PortalId),
 
-        ...formData,
+        AgencyName: formData.AgencyName,
+        BookingId: formData.BookingId,
+        AirlinePnr: formData.AirlinePnr,
+        Sector: formData.Sector,
       };
 
       console.log("UPDATE PAYLOAD:", payload);
 
       const response = await fetch(UPDATE_API, {
-        method: "POST", // ya PUT (API pe depend karta hai)
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(payload),
       });
 
-      if (!response.ok) throw new Error("Update failed");
+      if (!response.ok) {
+        throw new Error("Update failed");
+      }
 
       const result = await response.json();
+
       console.log("UPDATE RESPONSE:", result);
 
       alert("✅ Updated Successfully");
 
       navigate("/flightbooking");
-    } catch (err) {
-      console.error(err);
-      alert("❌ Update failed");
+    } catch (error) {
+      console.error(error);
+      alert("❌ Update Failed");
     }
   };
 
@@ -75,6 +116,9 @@ export default function Adits() {
         onChange={handleChange}
         placeholder="Agency Name"
       />
+
+      <br />
+      <br />
 
       <input
         name="BookingId"

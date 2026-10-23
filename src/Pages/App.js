@@ -1,4 +1,95 @@
 
+// import { Routes, Route, Navigate, Outlet } from "react-router-dom";
+// import Login from "./Login";
+// import Dashboard from "./Dashboard";
+// import Flights from "./Flights";
+// import Usermaster from "./Usermaster";
+// import Depositrequest from "./Depositrequest";
+// import Agencyledger from "./Agencyledger";
+// import Gatewayreport from "./Gatewayreport";
+// import Flightbooking from "./Flightbooking";
+// import Ticketsss from "./Ticketsss";
+// import Viewticket from "./Viewticket";
+// import Markups from "./Markups";
+// import EditAgency from "./EditAgency";
+// import UpdateAgency from "./UpdateAgency";
+// import Invoice from "./Invoice";
+// import Flightcancel from "./Flightcancel";
+// import EditBooking from "./Editpagedit";
+// import Editdeposit from "./Editdeposit";
+// import HotelBooking from "./HotelBooking";
+
+// // ...Routes ke andar
+
+
+
+
+// // Protected Route
+// const ProtectedRoute = () => {
+//   const isLoggedIn = localStorage.getItem("isLoggedIn");
+//   return isLoggedIn ? <Outlet /> : <Navigate to="/login" replace />;
+// };
+
+// function App() {
+//   return (
+//     <Routes>
+
+//       {/* Public */}
+//       <Route path="/Login" element={<Login />} />
+
+//       {/* Protected */}
+//       <Route element={<ProtectedRoute />}>
+
+//         <Route path="/dashboard" element={<Dashboard />} />
+//         <Route path="/flights" element={<Flights />} />
+//         <Route path="/usermaster" element={<Usermaster />} />
+//         <Route path="/depositrequest" element={<Depositrequest />} />
+//         <Route path="/agencyledger" element={<Agencyledger />} />
+//         <Route path="/gatewayreport" element={<Gatewayreport />} />
+//         <Route path="/flightbooking" element={<Flightbooking />} />
+//         <Route path="/viewticket" element={<Viewticket />} />
+//         <Route path="/markups" element={<Markups />} />
+//         <Route path="/Editpagedit/:id" element={<EditBooking />} />
+//         <Route path="/Flightcancel" element={<Flightcancel />} />
+//         <Route path="/edit-deposit" element={<Editdeposit />} />
+//         <Route path="/Edit" element={<Edit />} />
+
+
+
+        
+        
+
+
+
+
+
+
+//         {/* Agency Flow */}
+//         <Route path="/edit-agency" element={<EditAgency />} />
+//         <Route path="/update-agency" element={<UpdateAgency />} />
+
+//         {/* Invoice */}
+//         <Route path="/invoice/:txnId" element={<Invoice />} />
+//           {/* Ticket */}
+//         <Route path="/Ticketsss/:id" element={<Ticketsss />} />
+
+//                       <Route path="/HotelBooking" element={<HotelBooking />} />
+
+
+
+        
+
+//       </Route>
+
+//       {/* fallback */}
+//       <Route path="*" element={<Navigate to="/login" replace />} />
+
+//     </Routes>
+//   );
+// }
+
+// export default App;
+
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import Login from "./Login";
 import Dashboard from "./Dashboard";
@@ -16,9 +107,11 @@ import UpdateAgency from "./UpdateAgency";
 import Invoice from "./Invoice";
 import Flightcancel from "./Flightcancel";
 import EditBooking from "./Editpagedit";
-import Editdeposit from "./Editdeposit"; // path apne folder structure ke hisaab se adjust karo
-
-// ...Routes ke andar
+import Editdeposit from "./Editdeposit";
+import HotelBooking from "./HotelBooking";
+import Offlinehotel from "./Offlinehotel"; 
+import Offlineroom from "./Offlineroom";
+import Cuponcode from "./Cuponcode";
 
 
 
@@ -50,29 +143,25 @@ function App() {
         <Route path="/markups" element={<Markups />} />
         <Route path="/Editpagedit/:id" element={<EditBooking />} />
         <Route path="/Flightcancel" element={<Flightcancel />} />
-           <Route path="/edit-deposit" element={<Editdeposit />} />
-
-        
-        
-
-
-
-
-
+        <Route path="/edit-deposit" element={<Editdeposit />} />
+        {/* <Route path="/Edit" element={<Edit />} /> */} {/* Commented if not imported */}
 
         {/* Agency Flow */}
-        <Route path="/edit-agency" element={<EditAgency />} />
+<Route path="/edit-agency/:agencyCode" element={<EditAgency />} />                <Route path="/cupon-code" element={<Cuponcode />} />
+
         <Route path="/update-agency" element={<UpdateAgency />} />
 
         {/* Invoice */}
         <Route path="/invoice/:txnId" element={<Invoice />} />
-          {/* Ticket */}
+        
+        {/* Ticket */}
         <Route path="/Ticketsss/:id" element={<Ticketsss />} />
 
+        <Route path="/HotelBooking" element={<HotelBooking />} />
 
-
-
-        
+        {/* --- NAYE OFFLINE HOTEL ROUTES --- */}
+  <Route path="/offline-hotels/hotel" element={<Offlinehotel />} />
+<Route path="/offline-hotels/room" element={<Offlineroom />} />
 
       </Route>
 

@@ -19,23 +19,26 @@ const CARD_ICONS = {
   "View Ticket":         "🔍",
   "Hotel Cancellation":  "🏨",
   "Markup":              "💹",
+  "Offline Hotel":       "🏨", // Naya Icon
+  "Offline Room":        "🛏️",  // Naya Icon
 };
 
 const dashboardItems = [
   { label: "Agency Master",       path: "/Flights"         },
   { label: "User Master",         path: "/Usermaster"      },
-  // { label: "Deposit History",     path: "/Depositrequest"  },
   { label: "Agency Ledger",       path: "/Agencyledger"    },
-  // { label: "Visa Services",       path: null               },
   { label: "Gateway Report",      path: "/Gatewayreport"   },
   { label: "Flight Booking",      path: "/flightbooking"   },
-  // { label: "Ticketsss",           path: null               },
-  // { label: "Edit",                path: "/Edit"            },
+  { label: "Edit",                path: "/Edit"            },
   { label: "Flight Cancellation", path: "/Flightcancel"    },
-  { label: "Bus Cancellation",    path: null               },
   { label: "View Ticket",         path: "/Viewticket"      },
-  { label: "Hotel Cancellation",  path: null               },
+  { label: "Hotel Booking",       path: "/HotelBooking"    },
   { label: "Markup",              path: "/Markups"         },
+  // --- Naye Offline Hotel & Room Items ---
+  { label: "Offline Hotel",       path: "/offline-hotels/hotel" },
+  { label: "Offline Room",        path: "/offline-hotels/room"  },
+  { label: "Cupon Code", path: "/cupon-code" },
+
 ];
 
 export default function Dashboard() {
@@ -91,8 +94,8 @@ export default function Dashboard() {
         {/* ── Top Header ── */}
         <div className="dashboard-header">
           <div className="dashboard-header-title">
-         <img
-              src="/tripji.png"
+           <img
+              src="/Tripcaliber.png"
               className="img-thumbnail"
               alt="Travel illustration"
             />
@@ -151,7 +154,7 @@ export default function Dashboard() {
             <div className="modal-icon">🚪</div>
             <div className="modal-title">   Do you want to Logout ? </div>
             <div className="modal-sub">
-          
+            
             </div>
             <div className="modal-actions">
               <button className="btn-confirm" onClick={confirmLogout}>

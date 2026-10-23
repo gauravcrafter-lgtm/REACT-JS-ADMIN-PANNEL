@@ -2,16 +2,10 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Footer2 from "./Footer2";
+import { loadAgencyConfig } from "../util/loadConfig";
 
 const GET_API_URL = process.env.REACT_APP_GET_API_URL;
 const UPDATE_API_URL = process.env.REACT_APP_UPDATE_API_URL;
-
-// 👉 Same env vars jo FlightBooking.js mein use ho rahe hain
-const AGENCY_KEY = process.env.REACT_APP_AGENCY_KEY;
-const PORTAL_ID = process.env.REACT_APP_PORTAL_ID;
-// AdminKey aur AgencyKey same value hai example mein, agar alag ho to naya env bana lena
-const ADMIN_KEY = process.env.REACT_APP_ADMIN_KEY || AGENCY_KEY;
-const ACCOUNT_NO = 17;
 
 const bookingStatusMap = {
   0: "Default",
@@ -21,15 +15,8 @@ const bookingStatusMap = {
   17: "Hold",
 };
 
-const updateStatusOptions = {
-  1: "Booked",
-  12: "Rejected",
-};
-
-const paxStatusMap = {
-  1: "Booked",
-  12: "Rejected",
-};
+const updateStatusOptions = bookingStatusMap;
+const paxStatusMap = bookingStatusMap;
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -76,6 +63,38 @@ export default function TicketDetails() {
   const [updateMsg, setUpdateMsg] = useState("");
   const [updateOk, setUpdateOk] = useState(false);
 
+  // web.config se values
+  const [config, setConfig] = useState({
+    AgencyKey: "",
+    PortalId: "",
+    AccountNo: "",
+    AdminKey: "",
+  });
+  const [loadingConfig, setLoadingConfig] = useState(true);
+  const [configReady, setConfigReady] = useState(false);
+
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const cfg = await loadAgencyConfig();
+        setConfig({
+          AgencyKey: cfg.AgencyKey || "",
+          PortalId: cfg.PortalId || "",
+          AccountNo: cfg.AccountNo || "",
+          AdminKey: cfg.AdminKey || cfg.AgencyKey || "",
+        });
+        setConfigReady(true);
+      } catch (err) {
+        console.error("Config load failed:", err);
+        setError("Config load failed. Please refresh.");
+        setLoading(false);
+      } finally {
+        setLoadingConfig(false);
+      }
+    };
+    fetchConfig();
+  }, []);
+
   const fetchDetails = async () => {
     try {
       setLoading(true);
@@ -83,14 +102,18 @@ export default function TicketDetails() {
 
       if (!GET_API_URL) {
         throw new Error(
-          "REACT_APP_GET_API_URL .env file mein set nahi hai. Please .env check karein aur app restart karein."
+          "REACT_APP_GET_API_URL is not set in .env file. Please check .env and restart the app."
         );
+      }
+
+      if (!config.AgencyKey) {
+        throw new Error("AgencyKey missing from web.config");
       }
 
       const payload = {
         APIToken: "",
-        AgencyKey: AGENCY_KEY,
-        AccountNo: ACCOUNT_NO,
+        AgencyKey: config.AgencyKey,
+        AccountNo: Number(config.AccountNo) || 0,
         BookingId: id,
         AirlinePnr: null,
         IsFly: false,
@@ -98,6 +121,8 @@ export default function TicketDetails() {
         IsCreditNote: false,
         IsTC: true,
       };
+
+      console.log("TicketDetails GET payload:", payload);
 
       const res = await fetch(GET_API_URL, {
         method: "POST",
@@ -109,7 +134,9 @@ export default function TicketDetails() {
       const data = await res.json();
 
       if (data.ResponseStatus !== 1) {
-        throw new Error(data?.Error?.ErrorDesc || "Unable to retrieve booking details.");
+        throw new Error(
+          data?.Error?.ErrorDesc || "Unable to retrieve booking details."
+        );
       }
 
       setRaw(data);
@@ -118,7 +145,9 @@ export default function TicketDetails() {
       setAirlinePnr(contract.AirlinePnr || "");
 
       const currentStatus = data.BookingStatus ?? 1;
-      setNewStatus(String(updateStatusOptions[currentStatus] ? currentStatus : 1));
+      setNewStatus(
+        String(updateStatusOptions[currentStatus] ? currentStatus : 1)
+      );
 
       setPaxList(
         (data.Flightpassenger || []).map((p) => ({
@@ -126,28 +155,31 @@ export default function TicketDetails() {
           firstName: p.FirstName,
           lastName: p.LastName,
           name: `${p.Title || ""} ${p.FirstName || ""} ${p.LastName || ""}`.trim(),
-          cabinBag: contract.AirSegments?.[0]?.BaggageAllowed?.HandBaggage || "-",
-          checkInBag: contract.AirSegments?.[0]?.BaggageAllowed?.CheckInBaggage || "-",
+          cabinBag:
+            contract.AirSegments?.[0]?.BaggageAllowed?.HandBaggage || "-",
+          checkInBag:
+            contract.AirSegments?.[0]?.BaggageAllowed?.CheckInBaggage || "-",
           meal: p.MealCode || "-",
           baggage: p.BaggageCode || "-",
           seat: p.SeatCode || "-",
           refundable: contract.Refundable ? "True" : "False",
           ticketNumber: p.TicketNumber || "",
-          paxStatus: String(updateStatusOptions[data.BookingStatus] ? data.BookingStatus : 1),
+          paxStatus: String(
+            updateStatusOptions[data.BookingStatus] ? data.BookingStatus : 1
+          ),
         }))
       );
     } catch (err) {
       console.error(err);
-      setError(err.message || ".");
+      setError(err.message || "Something went wrong.");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (id) fetchDetails();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+    if (id && configReady) fetchDetails();
+  }, [id, configReady]);
 
   const handlePaxFieldChange = (paxId, field, value) => {
     setPaxList((prev) =>
@@ -155,7 +187,6 @@ export default function TicketDetails() {
     );
   };
 
-  // 👉 Jab tak PNR aur sabhi passengers ka Ticket No. fill nahi hota, form incomplete rahega
   const isFormComplete =
     airlinePnr.trim() !== "" &&
     paxList.length > 0 &&
@@ -164,15 +195,20 @@ export default function TicketDetails() {
   const handleUpdate = async () => {
     if (!raw) return;
 
-    if (!isFormComplete) {
+    const hasAnyChange =
+      airlinePnr.trim() !== "" ||
+      paxList.some((p) => p.ticketNumber.trim() !== "");
+
+    if (!hasAnyChange) {
       setUpdateOk(false);
-      setUpdateMsg(".");
+      setUpdateMsg("Please fill at least one field (PNR or Ticket No.).");
       return;
     }
 
     if (!UPDATE_API_URL) {
       setUpdateOk(false);
       setUpdateMsg(
+        "REACT_APP_UPDATE_API_URL is not set in .env file. Please check .env and restart the app."
       );
       return;
     }
@@ -182,15 +218,13 @@ export default function TicketDetails() {
       setUpdateMsg("");
       setUpdateOk(false);
 
-      // 🕐 Real-world jaisi speed — ek hi jhatke mein submit nahi hota,
-      // staged progress dikhta hai
       setUpdatingStage("Validating details...");
       await sleep(600);
 
       const contract = raw.Contracts?.[0] || {};
 
       const payload = {
-        AdminKey: ADMIN_KEY,
+        AdminKey: config.AdminKey || config.AgencyKey,
         TransactionId: Number(raw.BookingId),
         BookingId: raw.Tsid,
         GDSPnr: airlinePnr,
@@ -206,9 +240,11 @@ export default function TicketDetails() {
           TicketNumber: p.ticketNumber,
           PaxBookingStatus: Number(p.paxStatus),
         })),
-        PortalId: Number(PORTAL_ID),
+        PortalId: Number(config.PortalId) || 0,
         Remark: "Ticketupdate",
       };
+
+      console.log("TicketDetails UPDATE payload:", payload);
 
       setUpdatingStage("Updating booking...");
       const res = await fetch(UPDATE_API_URL, {
@@ -224,24 +260,28 @@ export default function TicketDetails() {
       await sleep(500);
 
       setUpdateOk(true);
-      setUpdateMsg("Booking successfully .");
-      await fetchDetails(); // refresh with latest data
+      setUpdateMsg("Booking successfully updated.");
+      await fetchDetails();
     } catch (err) {
       console.error(err);
       setUpdateOk(false);
-      setUpdateMsg("Update fail ho gaya. Please retry karein.");
+      setUpdateMsg("Update failed. Please try again.");
     } finally {
       setUpdating(false);
       setUpdatingStage("");
     }
   };
 
-  if (loading) {
+  if (loadingConfig || loading) {
     return (
       <div className="eticket-card">
         <div className="eticket-body state-box">
           <div className="spinner" />
-          <p>Booking details load ho rahi hai...</p>
+          <p>
+            {loadingConfig
+              ? "Loading config..."
+              : "Loading booking details..."}
+          </p>
         </div>
       </div>
     );
@@ -268,7 +308,7 @@ export default function TicketDetails() {
 
   return (
     <div className="eticket-card">
-      <Sidebar/>
+      <Sidebar />
       <div className="eticket-topline" />
 
       <div className="eticket-body">
@@ -287,10 +327,6 @@ export default function TicketDetails() {
             <tr>
               <td className="kv-label">Reference ID</td>
               <td>{raw.Tsid}</td>
-            </tr>
-            <tr>
-              <td className="kv-label">Ticket Status</td>
-              <td>{bookingStatusMap[raw.BookingStatus] || raw.BookingStatus}</td>
             </tr>
             <tr>
               <td className="kv-label">Ticket Status</td>
@@ -424,7 +460,9 @@ export default function TicketDetails() {
         <div className="fare-panel">
           <div className="row-between fare-head">
             <strong className="link-blue">Fare Details</strong>
-            <strong className="link-blue">Amount ({fare.Currency || "INR"})</strong>
+            <strong className="link-blue">
+              Amount ({fare.Currency || "INR"})
+            </strong>
           </div>
           <div className="fare-rows">
             <div className="row-between fare-line">
@@ -447,10 +485,17 @@ export default function TicketDetails() {
           </div>
         </div>
 
-       
+        {!isFormComplete && (
+          <div className="hint-msg">
+            Tip: Fill PNR and Ticket No. for all passengers to complete the
+            booking. Partial update is also allowed.
+          </div>
+        )}
 
         {updateMsg && (
-          <div className={`update-msg ${updateOk ? "ok" : "fail"}`}>{updateMsg}</div>
+          <div className={`update-msg ${updateOk ? "ok" : "fail"}`}>
+            {updateMsg}
+          </div>
         )}
 
         <div className="pay-row">
@@ -458,12 +503,12 @@ export default function TicketDetails() {
             type="button"
             className="btn-update"
             onClick={handleUpdate}
-            disabled={updating || !isFormComplete}
+            disabled={updating}
           >
             {updating ? updatingStage || "Updating..." : "Update"}
           </button>
         </div>
-        <Footer2/>
+        <Footer2 />
       </div>
 
       <style>{`
